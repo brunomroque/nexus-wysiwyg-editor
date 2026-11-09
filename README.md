@@ -1,8 +1,11 @@
-# 🌟 Nexus WYSIWYG Editor
+<p align="center">
+  <img src="./assets/nexus-logo.svg" alt="Nexus Editor Logo" width="460" />
+</p>
 
-An enterprise-grade, **TinyMCE-style WYSIWYG Editor** built on top of **React**, **TipTap**, **Radix UI**, and **TypeScript**. 
-
-Designed for mission-critical web applications requiring rich document authoring, formatting, revision histories, compliance checks, and seamless offline or cloud persistence.
+<p align="center">
+  <strong>Enterprise-grade, AI-Native WYSIWYG Editor for React</strong><br />
+  <em>Built on TipTap, Radix UI &amp; TypeScript &bull; Free, Open Source, Zero Paywalls</em>
+</p>
 
 ---
 

@@ -292,26 +292,34 @@ export function App() {
             boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <div
+          <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+            <img
+              src="/nexus-icon.svg"
+              alt="Nexus Editor Logo"
               style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                borderRadius: "0.5rem",
-                backgroundColor: "#2563eb",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontWeight: 700,
-                fontSize: "1.25rem",
+                width: "2.75rem",
+                height: "2.75rem",
+                borderRadius: "0.6rem",
+                filter: "drop-shadow(0 2px 8px rgba(168, 85, 247, 0.35))",
+                flexShrink: 0,
               }}
-            >
-              N
-            </div>
+            />
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <h1 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0 }}>
+                <h1
+                  style={{
+                    fontSize: "1.25rem",
+                    fontWeight: 800,
+                    margin: 0,
+                    background:
+                      theme === "dark"
+                        ? "linear-gradient(90deg, #ffffff, #e2e8f0, #c084fc)"
+                        : "linear-gradient(90deg, #0f172a, #334155, #6366f1)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
                   Nexus WYSIWYG Editor
                 </h1>
                 <span
@@ -322,13 +330,14 @@ export function App() {
                     fontWeight: 600,
                     padding: "0.15rem 0.45rem",
                     borderRadius: "0.25rem",
+                    border: "1px solid rgba(16, 185, 129, 0.3)",
                   }}
                 >
                   Enterprise Suite v1.0
                 </span>
               </div>
               <p style={{ margin: "0.15rem 0 0", fontSize: "0.8rem", opacity: 0.75 }}>
-                TinyMCE-style rich text architecture para React, TipTap, Radix UI & TypeScript.
+                TinyMCE-style rich text architecture para React, TipTap, Radix UI &amp; TypeScript.
               </p>
             </div>
           </div>
@@ -816,8 +825,9 @@ export function App() {
             gap: "0.5rem",
           }}
         >
-          <div>
-            Nexus WYSIWYG Editor &bull; Licenciado sob MIT &bull; Pronto para produção no NPM e GitHub
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <img src="/nexus-icon.svg" alt="" style={{ width: "1rem", height: "1rem" }} />
+            <span>Nexus WYSIWYG Editor &bull; Licenciado sob MIT &bull; Pronto para produção no NPM e GitHub</span>
           </div>
           <div>
             Desenvolvido por Bruno Roque &bull; Suporte React 18 e 19

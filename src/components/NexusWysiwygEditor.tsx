@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import type { Editor } from "@tiptap/core";
 import {
+  AlertCircle,
   AlignCenter,
   AlignJustify,
   AlignLeft,
@@ -11,9 +12,13 @@ import {
   ArrowRight,
   ArrowUp,
   Bold,
+  Bot,
   Check,
+  CheckCircle2,
+  CornerDownLeft,
   Eye,
   EyeOff,
+  FileText,
   Heading1,
   Heading2,
   Image as ImageIcon,
@@ -27,12 +32,16 @@ import {
   Pilcrow,
   Redo2,
   Search,
+  Sliders,
   Sparkles,
   Table2,
   Underline as UnderlineIcon,
   Undo2,
+  Wand2,
   X,
 } from "lucide-react";
+
+import { NexusLogoIcon } from "./NexusLogoIcon";
 
 import {
   type OpenAiConfig,
@@ -286,6 +295,7 @@ export function NexusWysiwygEditor({
   };
 
   const [showAiModal, setShowAiModal] = useState(false);
+  const [showAiSettings, setShowAiSettings] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState<{ text: string; isError?: boolean } | null>(null);
@@ -376,6 +386,14 @@ export function NexusWysiwygEditor({
   useEffect(() => {
     editor?.setEditable(!readOnly);
   }, [editor, readOnly]);
+
+  const selectedSnippet = useMemo(() => {
+    if (!editor) return "";
+    const { from, to } = editor.state.selection;
+    if (from === to) return "";
+    const text = editor.state.doc.textBetween(from, to, " ").trim();
+    return text.length > 90 ? text.substring(0, 90) + "..." : text;
+  }, [editor, showAiModal]);
 
   // Load collaboration items
   useEffect(() => {
@@ -957,7 +975,7 @@ export function NexusWysiwygEditor({
                 setAiMessage(null);
               }}
             >
-              <Sparkles className="h-3.5 w-3.5 mr-1.5 text-[var(--nexus-accent)]" />
+              <NexusLogoIcon size={16} className="mr-1.5" />
               {t.aiAssistant}...
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -1073,7 +1091,7 @@ export function NexusWysiwygEditor({
             setAiMessage(null);
           }}
         >
-          <Sparkles className="h-4 w-4" />
+          <NexusLogoIcon size={16} />
           <span>IA</span>
         </button>
 
@@ -1178,7 +1196,7 @@ export function NexusWysiwygEditor({
             <ContextMenuSeparator />
             <ContextMenuLabel>Inteligência Artificial (OpenAI)</ContextMenuLabel>
             <ContextMenuItem onSelect={() => { setShowAiModal(true); setAiMessage(null); }}>
-              <Sparkles className="h-3.5 w-3.5 mr-1.5 text-[var(--nexus-accent)]" /> {t.aiAssistant}...
+              <NexusLogoIcon size={15} className="mr-1.5" /> {t.aiAssistant}...
             </ContextMenuItem>
             <ContextMenuItem onSelect={() => void handleRunAi("Melhore a escrita e clareza do texto selecionado mantendo o tom corporativo.")}>
               {t.aiImproveWriting}
@@ -1432,139 +1450,218 @@ export function NexusWysiwygEditor({
             </div>
           </aside>
         ) : null}
+
+        {/* Floating Copilot Pill (as seen in image) */}
+        <button
+          type="button"
+          className="nexus-ai-floating-pill"
+          onClick={() => {
+            setShowAiModal(true);
+            setAiMessage(null);
+          }}
+          title="Abrir Nexus AI Copilot"
+        >
+          <NexusLogoIcon size={18} style={{ filter: "drop-shadow(0 0 5px rgba(168, 85, 247, 0.6))" }} />
+          <span className="nexus-ai-pill-text font-semibold">Nexus AI Copilot</span>
+          <span className="nexus-ai-pill-badge">{activeAiConfig.model || "gpt-4o-mini"}</span>
+        </button>
       </div>
 
-      {/* AI Assistant Modal (OpenAI Standard NLP Agent) */}
+      {/* AI Assistant Modal (Nexus AI Copilot - Modern Glowing Card) */}
       {showAiModal ? (
-        <div className="nexus-modal-overlay">
-          <div className="nexus-modal-card w-full max-w-lg" style={{ maxWidth: "34rem" }}>
-            <div className="nexus-modal-header">
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <Sparkles className="h-4 w-4 text-[var(--nexus-accent)]" />
-                <span>{t.aiAssistant} &bull; Agente OpenAI</span>
+        <div
+          className="nexus-ai-modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !aiLoading) setShowAiModal(false);
+          }}
+        >
+          <div className="nexus-ai-modal-card">
+            {/* Header */}
+            <div className="nexus-ai-modal-header">
+              <div className="nexus-ai-brand">
+                <NexusLogoIcon size={34} style={{ filter: "drop-shadow(0 0 10px rgba(168, 85, 247, 0.6))" }} />
+                <div className="nexus-ai-title-wrap">
+                  <span className="nexus-ai-title">Nexus AI Copilot</span>
+                  <div className="nexus-ai-model-tag">
+                    <span className="nexus-ai-status-dot pulse" />
+                    <span>{activeAiConfig.model || "gpt-4o-mini"}</span>
+                    <span>&bull; NLP Agent</span>
+                  </div>
+                </div>
               </div>
-              <button
-                type="button"
-                className="nexus-toolbar-btn text-[var(--nexus-text-muted)]"
-                onClick={() => setShowAiModal(false)}
-              >
-                <X className="h-4 w-4" />
-              </button>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <button
+                  type="button"
+                  className="nexus-toolbar-btn text-slate-400 hover:text-white"
+                  title="Configurar Provedor / API"
+                  onClick={() => setShowAiSettings((prev) => !prev)}
+                >
+                  <Sliders className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  className="nexus-toolbar-btn text-slate-400 hover:text-white"
+                  onClick={() => setShowAiModal(false)}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
-            <p style={{ margin: 0, opacity: 0.8, fontSize: "0.75rem", lineHeight: 1.4 }}>
-              Desenvolva textos ou execute comandos no editor via Linguagem Natural. O modelo executará ferramentas como inserção, tabelas e formatação automaticamente (Modelo: <strong>{activeAiConfig.model}</strong>).
-            </p>
+            {/* Context Badge (if text is selected) */}
+            {selectedSnippet ? (
+              <div className="nexus-ai-context-banner">
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", overflow: "hidden" }}>
+                  <FileText className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                  <span style={{ fontSize: "0.7rem", color: "#94a3b8" }}>Trecho selecionado:</span>
+                  <span className="nexus-ai-context-text">"{selectedSnippet}"</span>
+                </div>
+              </div>
+            ) : null}
 
-            {/* Quick Prompts Chips */}
-            <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap" }}>
+            {/* Quick Actions Grid */}
+            <div className="nexus-ai-chips-grid">
               {[
-                { label: "✨ Melhorar Escrita", prompt: "Melhore a escrita e torne o tom mais corporativo e persuasivo." },
-                { label: "📝 Resumir", prompt: "Resuma o texto selecionado em tópicos claros e objetivos." },
-                { label: "🚀 Expandir", prompt: "Expanda as ideias do texto adicionando justificativas e detalhes." },
-                { label: "📊 Criar Tabela", prompt: "Crie uma tabela com 3 colunas e 4 linhas contendo dados realistas." },
-                { label: "✅ Corrigir Gramática", prompt: "Corrija quaisquer erros gramaticais e de pontuação no texto." },
-                { label: "🌐 Traduzir (EN)", prompt: "Traduza o texto selecionado para o Inglês mantendo o estilo profissional." },
+                { icon: "✨", label: "Melhorar Escrita", prompt: "Melhore a escrita e torne o tom mais corporativo e persuasivo." },
+                { icon: "📝", label: "Resumir em Tópicos", prompt: "Resuma o texto selecionado em tópicos claros e objetivos." },
+                { icon: "📊", label: "Criar Tabela", prompt: "Crie uma tabela comparativa com 3 colunas e 4 linhas contendo dados estruturados." },
+                { icon: "🚀", label: "Expandir Ideias", prompt: "Expanda as ideias do texto adicionando justificativas e contexto detalhado." },
+                { icon: "✅", label: "Corrigir Gramática", prompt: "Corrija quaisquer erros gramaticais e de pontuação no texto." },
+                { icon: "🌐", label: "Traduzir (EN)", prompt: "Traduza o texto selecionado para o Inglês mantendo o estilo profissional." },
               ].map((chip, idx) => (
                 <button
                   key={idx}
                   type="button"
-                  className="nexus-btn-secondary"
-                  style={{ fontSize: "0.7rem", padding: "0.2rem 0.5rem" }}
+                  className="nexus-ai-chip"
                   onClick={() => {
                     setAiPrompt(chip.prompt);
                     void handleRunAi(chip.prompt);
                   }}
                 >
-                  {chip.label}
+                  <span>{chip.icon}</span>
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {chip.label}
+                  </span>
                 </button>
               ))}
             </div>
 
-            <textarea
-              rows={3}
-              placeholder={t.aiPromptPlaceholder}
-              value={aiPrompt}
-              onChange={(e) => setAiPrompt(e.target.value)}
-              className="nexus-input-field"
-              style={{ width: "100%", resize: "vertical", fontFamily: "inherit" }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  void handleRunAi();
-                }
-              }}
-            />
+            {/* Prompt Input Box */}
+            <div className="nexus-ai-input-wrap">
+              <textarea
+                rows={3}
+                placeholder="Ex: 'Crie uma tabela comparativa...', 'Reescreva em tom executivo...', 'Resuma este documento...'"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="nexus-ai-textarea"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void handleRunAi();
+                  }
+                }}
+              />
+              <div className="nexus-ai-input-hint">
+                <span>Dica: Comandos em linguagem natural controlam o editor (tabelas, formatação, inserções)</span>
+                <span style={{ opacity: 0.8, display: "inline-flex", alignItems: "center", gap: "0.2rem" }}>
+                  <CornerDownLeft className="h-3 w-3" /> Enter para executar
+                </span>
+              </div>
+            </div>
 
-            {/* Status / Feedback message */}
+            {/* Loading / Shimmer State */}
             {aiLoading && (
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--nexus-accent)", fontSize: "0.75rem" }}>
-                <Sparkles className="h-3.5 w-3.5 animate-spin" />
-                <span>Processando com o modelo de IA...</span>
+              <div className="nexus-ai-shimmer-container">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.75rem", color: "#c084fc" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <Sparkles className="h-3.5 w-3.5 animate-spin text-purple-400" />
+                    <span className="font-medium">Nexus AI Copilot analisando e aplicando alterações...</span>
+                  </div>
+                  <span style={{ fontSize: "0.65rem", color: "#a855f7" }}>Aguardando modelo</span>
+                </div>
+                <div className="nexus-ai-shimmer-bar" />
               </div>
             )}
 
+            {/* Feedback / Result message */}
             {aiMessage && (
-              <div
-                style={{
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "0.375rem",
-                  backgroundColor: aiMessage.isError ? "rgba(239,68,68,0.12)" : "rgba(16,185,129,0.12)",
-                  color: aiMessage.isError ? "#ef4444" : "#10b981",
-                  border: `1px solid ${aiMessage.isError ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)"}`,
-                  fontSize: "0.75rem",
-                  lineHeight: 1.4,
-                }}
-              >
-                {aiMessage.text}
+              <div className={`nexus-ai-result-box ${aiMessage.isError ? "error" : "success"}`}>
+                {aiMessage.isError ? (
+                  <AlertCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                )}
+                <div style={{ flex: 1 }}>{aiMessage.text}</div>
               </div>
             )}
 
-            {/* API Key fallback helper if not detected in env */}
-            {!activeAiConfig.apiKey && (
+            {/* Collapsible / Fallback Settings for API Key or Local Models (Ollama, Groq, etc.) */}
+            {(showAiSettings || !activeAiConfig.apiKey) && (
               <div
                 style={{
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "0.375rem",
-                  backgroundColor: "rgba(245,158,11,0.1)",
-                  border: "1px solid rgba(245,158,11,0.3)",
-                  color: "#d97706",
+                  padding: "0.65rem 0.85rem",
+                  borderRadius: "0.5rem",
+                  backgroundColor: "rgba(30, 41, 59, 0.7)",
+                  border: "1px solid rgba(148, 163, 184, 0.2)",
                   fontSize: "0.7rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.4rem",
                 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
-                  🔑 Chave OpenAI não detectada no ambiente
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontWeight: 600, color: "#e2e8f0" }}>
+                  <span>⚙️ Configuração de IA (OpenAI / Groq / Ollama local)</span>
+                  {!activeAiConfig.apiKey && (
+                    <span style={{ color: "#f59e0b", fontSize: "0.65rem" }}>Chave não detectada</span>
+                  )}
                 </div>
-                <div>
-                  Configure <code>VITE_OPENAI_API_KEY</code> no arquivo <code>.env</code> ou digite abaixo para testar:
+                <div style={{ color: "#94a3b8", fontSize: "0.68rem" }}>
+                  Insira sua API Key ou use um modelo local gratuito via Ollama (sem custos):
                 </div>
-                <input
-                  type="password"
-                  placeholder="sk-..."
-                  value={customApiKey}
-                  onChange={(e) => setCustomApiKey(e.target.value)}
-                  className="nexus-input-field"
-                  style={{ marginTop: "0.35rem", width: "100%" }}
-                />
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <input
+                    type="password"
+                    placeholder="Chave API (sk-... ou 'ollama')"
+                    value={customApiKey}
+                    onChange={(e) => setCustomApiKey(e.target.value)}
+                    className="nexus-input-field"
+                    style={{
+                      flex: 1,
+                      backgroundColor: "rgba(15, 23, 42, 0.8)",
+                      borderColor: "rgba(148, 163, 184, 0.2)",
+                      color: "#f8fafc",
+                      fontSize: "0.75rem",
+                    }}
+                  />
+                </div>
               </div>
             )}
 
-            <div className="nexus-modal-footer">
-              <button
-                type="button"
-                className="nexus-btn-secondary"
-                onClick={() => setShowAiModal(false)}
-              >
-                Fechar
-              </button>
-              <button
-                type="button"
-                className="nexus-btn-primary"
-                disabled={aiLoading || !aiPrompt.trim()}
-                onClick={() => void handleRunAi()}
-              >
-                {aiLoading ? "Processando..." : "Executar com IA"}
-              </button>
+            {/* Footer */}
+            <div className="nexus-ai-modal-footer">
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                <Bot className="h-3.5 w-3.5 text-purple-400" />
+                <span>NLP Function Calling &bull; Ferramentas nativas do editor</span>
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  type="button"
+                  className="nexus-ai-btn-secondary"
+                  onClick={() => setShowAiModal(false)}
+                >
+                  Fechar
+                </button>
+                <button
+                  type="button"
+                  className="nexus-ai-btn-primary"
+                  disabled={aiLoading || !aiPrompt.trim()}
+                  onClick={() => void handleRunAi()}
+                >
+                  <Wand2 className="h-3.5 w-3.5" />
+                  <span>{aiLoading ? "Processando..." : "Executar Copilot"}</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
