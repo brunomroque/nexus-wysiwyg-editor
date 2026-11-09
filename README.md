@@ -119,12 +119,14 @@ Abaixo está a representação visual da interface do Nexus em execução:
 
 ## 📦 Instalação
 
-Adicione o Nexus ao seu projeto utilizando o seu gerenciador de pacotes favorito:
+Adicione o Nexus ao seu projeto utilizando o npm:
 
 ```bash
-# npm
 npm install nexus-wysiwyg-editor
+```
 
+<!-- Opções adicionais de gerenciadores:
+```bash
 # yarn
 yarn add nexus-wysiwyg-editor
 
@@ -134,6 +136,7 @@ pnpm add nexus-wysiwyg-editor
 # bun
 bun add nexus-wysiwyg-editor
 ```
+-->
 
 ### Dependências de Pares (Peer Dependencies)
 
