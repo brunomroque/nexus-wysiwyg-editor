@@ -1,0 +1,73 @@
+{
+  "name": "nexus-wysiwyg-editor",
+  "version": "1.0.0",
+  "description": "An enterprise-grade, TinyMCE-style WYSIWYG editor built with React, TipTap, Radix UI, and TypeScript.",
+  "author": "Bruno Roque",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "react",
+    "wysiwyg",
+    "editor",
+    "tiptap",
+    "tinymce",
+    "rich-text",
+    "radix-ui",
+    "typescript",
+    "enterprise"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "demo": "cd demo && npm run dev"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-context-menu": "^2.2.16",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@tiptap/core": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-image": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-link": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-placeholder": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-table": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-table-cell": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-table-header": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-table-row": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-text-align": "^2.11.5 || ^3.0.0",
+    "@tiptap/extension-underline": "^2.11.5 || ^3.0.0",
+    "@tiptap/react": "^2.11.5 || ^3.0.0",
+    "@tiptap/starter-kit": "^2.11.5 || ^3.0.0",
+    "clsx": "^2.1.1",
+    "dompurify": "^3.2.0",
+    "lucide-react": "^1.8.0 || ^0.400.0",
+    "tailwind-merge": "^2.5.0 || ^3.0.0"
+  },
+  "devDependencies": {
+    "@types/dompurify": "^3.0.5",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3"
+  }
+}
+
