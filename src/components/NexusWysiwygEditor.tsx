@@ -27,11 +27,19 @@ import {
   Pilcrow,
   Redo2,
   Search,
+  Sparkles,
   Table2,
   Underline as UnderlineIcon,
   Undo2,
   X,
 } from "lucide-react";
+
+import {
+  type OpenAiConfig,
+  type AiExecutionResult,
+  sendOpenAiAgentRequest,
+  resolveOpenAiConfig,
+} from "../core/openAiAgent";
 
 import { WysiwygCommandRegistry } from "../plugins/commandRegistry";
 import { defaultPlugins } from "../plugins/defaultPlugins";
@@ -90,6 +98,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { EditorThemeContext } from "./ui/utils";
 import { defaultStorageAdapter } from "../adapters/memoryStorageAdapter";
 import type {
   AuditAdapter,
@@ -126,6 +135,8 @@ export type NexusWysiwygEditorProps = {
   onUploadImage?: ImageUploadHandler;
   onMetric?: (name: string, payload?: Record<string, unknown>) => void;
   onExport?: (format: "pdf" | "docx", html: string) => void | Promise<void>;
+  aiConfig?: OpenAiConfig;
+  onAiAction?: (result: AiExecutionResult) => void;
 };
 
 const DEFAULT_STORAGE_KEY = "nexus-wysiwyg-draft";
@@ -224,6 +235,8 @@ export function NexusWysiwygEditor({
   onUploadImage,
   onMetric,
   onExport,
+  aiConfig,
+  onAiAction,
 }: NexusWysiwygEditorProps) {
   const t = useMemo(
     () => getTranslations(locale, customTranslations),
@@ -271,6 +284,20 @@ export function NexusWysiwygEditor({
   const emitMetric = (name: string, payload?: Record<string, unknown>) => {
     onMetric?.(name, payload);
   };
+
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiMessage, setAiMessage] = useState<{ text: string; isError?: boolean } | null>(null);
+  const [customApiKey, setCustomApiKey] = useState("");
+
+  const activeAiConfig = useMemo(() => {
+    const resolved = resolveOpenAiConfig(aiConfig);
+    if (customApiKey.trim()) {
+      resolved.apiKey = customApiKey.trim();
+    }
+    return resolved;
+  }, [aiConfig, customApiKey]);
 
   const extensions = useMemo(() => {
     return plugins.flatMap((plugin) => plugin.createExtensions());
@@ -497,6 +524,17 @@ export function NexusWysiwygEditor({
 
     await collaborationAdapter.insertComment(storageKey, thread);
     setComments((prev) => [...prev, thread]);
+
+    if (auditAdapter) {
+      await auditAdapter.logEntry({
+        storageKey,
+        actorId: currentUserId,
+        action: "comment_created",
+        detail: `Comentário: "${message}" em "${quote.slice(0, 30)}"`,
+      });
+      const entries = await auditAdapter.listEntries(storageKey, 20, 0);
+      setAuditEntries(entries);
+    }
   };
 
   const handleAddSuggestion = async () => {
@@ -516,6 +554,17 @@ export function NexusWysiwygEditor({
 
     await collaborationAdapter.insertSuggestion(storageKey, suggestion);
     setSuggestions((prev) => [...prev, suggestion]);
+
+    if (auditAdapter) {
+      await auditAdapter.logEntry({
+        storageKey,
+        actorId: currentUserId,
+        action: "suggestion_created",
+        detail: `Sugestão: "${originalText.slice(0, 20)}" -> "${proposedText.slice(0, 20)}"`,
+      });
+      const entries = await auditAdapter.listEntries(storageKey, 20, 0);
+      setAuditEntries(entries);
+    }
   };
 
   const handleSaveRevision = async () => {
@@ -531,6 +580,17 @@ export function NexusWysiwygEditor({
 
     await collaborationAdapter.insertRevision(storageKey, snapshot);
     setRevisions((prev) => [snapshot, ...prev]);
+
+    if (auditAdapter) {
+      await auditAdapter.logEntry({
+        storageKey,
+        actorId: currentUserId,
+        action: "revision_saved",
+        detail: `Snapshot de revisão: "${label}"`,
+      });
+      const entries = await auditAdapter.listEntries(storageKey, 20, 0);
+      setAuditEntries(entries);
+    }
   };
 
   const handleRunCompliance = () => {
@@ -541,6 +601,48 @@ export function NexusWysiwygEditor({
     setSpellIssues(spellcheckFromHtml(html, locale));
     setShowRightPanel(true);
     setActivePanelTab("compliance");
+  };
+
+  const handleRunAi = async (overridePrompt?: string) => {
+    if (!editor) return;
+    const promptToRun = overridePrompt || aiPrompt;
+    if (!promptToRun.trim()) return;
+
+    setAiLoading(true);
+    setAiMessage(null);
+    emitMetric("ai.request.start", { prompt: promptToRun });
+
+    try {
+      const res = await sendOpenAiAgentRequest({
+        userPrompt: promptToRun,
+        editor,
+        config: activeAiConfig,
+        commandRegistry,
+      });
+
+      if (res.success) {
+        setAiMessage({ text: res.message, isError: false });
+        emitMetric("ai.request.success", { toolUsed: res.toolUsed });
+        onAiAction?.(res);
+        if (auditAdapter) {
+          await auditAdapter.logEntry({
+            storageKey,
+            actorId: currentUserId,
+            action: "ai_generation",
+            detail: `Comando IA: "${promptToRun.slice(0, 40)}" -> ${res.toolUsed || "conteúdo gerado"}`,
+          });
+          const entries = await auditAdapter.listEntries(storageKey, 20, 0);
+          setAuditEntries(entries);
+        }
+      } else {
+        setAiMessage({ text: res.message, isError: true });
+        emitMetric("ai.request.error", { message: res.message });
+      }
+    } catch (err: any) {
+      setAiMessage({ text: String(err?.message || err), isError: true });
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const serializedHtml = editor?.getHTML() ?? "";
@@ -562,11 +664,13 @@ export function NexusWysiwygEditor({
   }
 
   return (
-    <div
-      className={`nexus-editor-container ${theme === "dark" ? "dark" : ""} ${
-        isFullscreen ? "is-fullscreen" : ""
-      } ${className}`}
-    >
+    <EditorThemeContext.Provider value={theme}>
+      <div
+        className={`nexus-editor-container ${theme === "dark" ? "dark" : ""} ${
+          isFullscreen ? "is-fullscreen" : ""
+        } ${className}`}
+        data-theme={theme}
+      >
       <input
         ref={fileInputRef}
         type="file"
@@ -753,6 +857,152 @@ export function NexusWysiwygEditor({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button type="button" className="nexus-toolbar-btn font-medium">
+              {t.menuFormat}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onSelect={() => executeCommand("text.bold")}>
+              Negrito (Bold)
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("text.italic")}>
+              Itálico (Italic)
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("text.underline")}>
+              Sublinhado (Underline)
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => executeCommand("text.paragraph")}>
+              Parágrafo Normal
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("text.heading1")}>
+              Título 1 (H1)
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("text.heading2")}>
+              Título 2 (H2)
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => executeCommand("text.alignLeft")}>
+              Alinhar à Esquerda
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("text.alignCenter")}>
+              Centralizar
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("text.alignRight")}>
+              Alinhar à Direita
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("text.alignJustify")}>
+              Justificar
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => executeCommand("text.bulletList")}>
+              Lista com Marcadores
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("text.orderedList")}>
+              Lista Numerada
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button type="button" className="nexus-toolbar-btn font-medium">
+              {t.menuTable}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onSelect={() => executeCommand("insert.table")}>
+              Inserir Tabela (3x3)
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => executeCommand("table.addRowBefore")}>
+              Inserir Linha Acima
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("table.addRowAfter")}>
+              Inserir Linha Abaixo
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("table.deleteRow")}>
+              Excluir Linha
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => executeCommand("table.addColumnBefore")}>
+              Inserir Coluna à Esquerda
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("table.addColumnAfter")}>
+              Inserir Coluna à Direita
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("table.deleteColumn")}>
+              Excluir Coluna
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => executeCommand("table.toggleHeaderCell")}>
+              Alternar Célula de Cabeçalho
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => executeCommand("table.mergeOrSplit")}>
+              Mesclar / Dividir Células
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button type="button" className="nexus-toolbar-btn font-semibold text-[var(--nexus-accent)] gap-1">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>{t.menuAi}</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onSelect={() => {
+                setShowAiModal(true);
+                setAiMessage(null);
+              }}
+            >
+              <Sparkles className="h-3.5 w-3.5 mr-1.5 text-[var(--nexus-accent)]" />
+              {t.aiAssistant}...
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={() =>
+                void handleRunAi("Melhore a escrita e clareza do texto selecionado mantendo o tom corporativo.")
+              }
+            >
+              {t.aiImproveWriting}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() =>
+                void handleRunAi("Resuma o trecho selecionado em tópicos objetivos e concisos.")
+              }
+            >
+              {t.aiSummarize}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() =>
+                void handleRunAi("Expanda os tópicos do texto selecionado acrescentando detalhes e contexto.")
+              }
+            >
+              {t.aiExpand}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() =>
+                void handleRunAi("Corrija quaisquer desvios de gramática, pontuação e concordância no texto selecionado.")
+              }
+            >
+              {t.aiFixGrammar}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={() =>
+                void handleRunAi("Crie uma tabela comparativa com 3 colunas e 4 linhas contendo métricas relevantes.")
+              }
+            >
+              Criar Tabela via IA (NLP)
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button type="button" className="nexus-toolbar-btn font-medium">
               {t.menuComments}
             </button>
           </DropdownMenuTrigger>
@@ -816,6 +1066,19 @@ export function NexusWysiwygEditor({
 
         <button
           type="button"
+          className="nexus-toolbar-btn font-semibold text-[var(--nexus-accent)] gap-1 px-2"
+          title={t.aiAssistant}
+          onClick={() => {
+            setShowAiModal(true);
+            setAiMessage(null);
+          }}
+        >
+          <Sparkles className="h-4 w-4" />
+          <span>IA</span>
+        </button>
+
+        <button
+          type="button"
           className="nexus-toolbar-btn"
           title={t.searchAndReplace}
           onClick={() => setShowSearchModal(true)}
@@ -835,25 +1098,25 @@ export function NexusWysiwygEditor({
 
       {/* Link and Image Popovers */}
       {showLinkInput ? (
-        <div className="flex items-center gap-2 bg-[var(--nexus-surface-2)] p-2 border-b border-[var(--nexus-border)] text-xs">
+        <div className="nexus-input-bar flex items-center gap-2 bg-[var(--nexus-surface-2)] p-2 border-b border-[var(--nexus-border)] text-xs">
           <input
             type="url"
             placeholder="https://example.com"
             value={linkInputHref}
             onChange={(e) => setLinkInputHref(e.target.value)}
-            className="px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)] text-[var(--nexus-text)] flex-1"
+            className="nexus-input-field px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)] text-[var(--nexus-text)] flex-1"
           />
           <button
             type="button"
             onClick={handleApplyLink}
-            className="px-2 py-1 rounded bg-[var(--nexus-accent)] text-white font-medium"
+            className="nexus-btn-primary px-2 py-1 rounded bg-[var(--nexus-accent)] text-white font-medium"
           >
             {t.save}
           </button>
           <button
             type="button"
             onClick={() => setShowLinkInput(false)}
-            className="p-1 rounded text-[var(--nexus-text-muted)]"
+            className="nexus-toolbar-btn p-1 rounded text-[var(--nexus-text-muted)]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -861,25 +1124,25 @@ export function NexusWysiwygEditor({
       ) : null}
 
       {showImageInput ? (
-        <div className="flex items-center gap-2 bg-[var(--nexus-surface-2)] p-2 border-b border-[var(--nexus-border)] text-xs">
+        <div className="nexus-input-bar flex items-center gap-2 bg-[var(--nexus-surface-2)] p-2 border-b border-[var(--nexus-border)] text-xs">
           <input
             type="url"
             placeholder="https://example.com/image.png"
             value={imageInputSrc}
             onChange={(e) => setImageInputSrc(e.target.value)}
-            className="px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)] text-[var(--nexus-text)] flex-1"
+            className="nexus-input-field px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)] text-[var(--nexus-text)] flex-1"
           />
           <button
             type="button"
             onClick={handleApplyImage}
-            className="px-2 py-1 rounded bg-[var(--nexus-accent)] text-white font-medium"
+            className="nexus-btn-primary px-2 py-1 rounded bg-[var(--nexus-accent)] text-white font-medium"
           >
             {t.save}
           </button>
           <button
             type="button"
             onClick={() => setShowImageInput(false)}
-            className="p-1 rounded text-[var(--nexus-text-muted)]"
+            className="nexus-toolbar-btn p-1 rounded text-[var(--nexus-text-muted)]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -887,7 +1150,7 @@ export function NexusWysiwygEditor({
       ) : null}
 
       {/* Main Body (Editor + Optional Side Panel) */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="nexus-editor-body flex flex-1 overflow-hidden">
         <ContextMenu>
           <ContextMenuTrigger asChild>
             <div className="nexus-tiptap-content flex-1 overflow-y-auto">
@@ -912,18 +1175,29 @@ export function NexusWysiwygEditor({
             <ContextMenuItem onSelect={handleGenerateToc}>
               {t.generateToc}
             </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuLabel>Inteligência Artificial (OpenAI)</ContextMenuLabel>
+            <ContextMenuItem onSelect={() => { setShowAiModal(true); setAiMessage(null); }}>
+              <Sparkles className="h-3.5 w-3.5 mr-1.5 text-[var(--nexus-accent)]" /> {t.aiAssistant}...
+            </ContextMenuItem>
+            <ContextMenuItem onSelect={() => void handleRunAi("Melhore a escrita e clareza do texto selecionado mantendo o tom corporativo.")}>
+              {t.aiImproveWriting}
+            </ContextMenuItem>
+            <ContextMenuItem onSelect={() => void handleRunAi("Resuma o trecho selecionado em tópicos objetivos.")}>
+              {t.aiSummarize}
+            </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
 
         {/* Right Inspection / Collaboration / Quality Drawer */}
         {showRightPanel ? (
-          <aside className="w-80 border-l border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] flex flex-col text-xs">
-            <div className="flex items-center justify-between border-b border-[var(--nexus-border)] p-2 font-medium">
-              <div className="flex gap-1">
+          <aside className="nexus-side-panel w-80 border-l border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] flex flex-col text-xs">
+            <div className="nexus-side-panel-header flex items-center justify-between border-b border-[var(--nexus-border)] p-2 font-medium">
+              <div className="nexus-side-panel-tabs flex gap-1">
                 <button
                   type="button"
-                  className={`px-2 py-0.5 rounded ${
-                    activePanelTab === "preview" ? "bg-[var(--nexus-surface-2)] font-semibold" : ""
+                  className={`nexus-side-panel-tab px-2 py-0.5 rounded ${
+                    activePanelTab === "preview" ? "is-active bg-[var(--nexus-surface-2)] font-semibold" : ""
                   }`}
                   onClick={() => setActivePanelTab("preview")}
                 >
@@ -931,8 +1205,8 @@ export function NexusWysiwygEditor({
                 </button>
                 <button
                   type="button"
-                  className={`px-2 py-0.5 rounded ${
-                    activePanelTab === "collab" ? "bg-[var(--nexus-surface-2)] font-semibold" : ""
+                  className={`nexus-side-panel-tab px-2 py-0.5 rounded ${
+                    activePanelTab === "collab" ? "is-active bg-[var(--nexus-surface-2)] font-semibold" : ""
                   }`}
                   onClick={() => setActivePanelTab("collab")}
                 >
@@ -940,8 +1214,8 @@ export function NexusWysiwygEditor({
                 </button>
                 <button
                   type="button"
-                  className={`px-2 py-0.5 rounded ${
-                    activePanelTab === "diff" ? "bg-[var(--nexus-surface-2)] font-semibold" : ""
+                  className={`nexus-side-panel-tab px-2 py-0.5 rounded ${
+                    activePanelTab === "diff" ? "is-active bg-[var(--nexus-surface-2)] font-semibold" : ""
                   }`}
                   onClick={() => setActivePanelTab("diff")}
                 >
@@ -949,9 +1223,9 @@ export function NexusWysiwygEditor({
                 </button>
                 <button
                   type="button"
-                  className={`px-2 py-0.5 rounded ${
+                  className={`nexus-side-panel-tab px-2 py-0.5 rounded ${
                     activePanelTab === "compliance"
-                      ? "bg-[var(--nexus-surface-2)] font-semibold"
+                      ? "is-active bg-[var(--nexus-surface-2)] font-semibold"
                       : ""
                   }`}
                   onClick={() => setActivePanelTab("compliance")}
@@ -960,8 +1234,8 @@ export function NexusWysiwygEditor({
                 </button>
                 <button
                   type="button"
-                  className={`px-2 py-0.5 rounded ${
-                    activePanelTab === "audit" ? "bg-[var(--nexus-surface-2)] font-semibold" : ""
+                  className={`nexus-side-panel-tab px-2 py-0.5 rounded ${
+                    activePanelTab === "audit" ? "is-active bg-[var(--nexus-surface-2)] font-semibold" : ""
                   }`}
                   onClick={() => setActivePanelTab("audit")}
                 >
@@ -971,13 +1245,13 @@ export function NexusWysiwygEditor({
               <button
                 type="button"
                 onClick={() => setShowRightPanel(false)}
-                className="text-[var(--nexus-text-muted)] hover:text-[var(--nexus-text)]"
+                className="nexus-toolbar-btn text-[var(--nexus-text-muted)] hover:text-[var(--nexus-text)]"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            <div className="nexus-side-panel-content flex-1 overflow-y-auto p-3 space-y-3">
               {activePanelTab === "preview" && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -1160,13 +1434,153 @@ export function NexusWysiwygEditor({
         ) : null}
       </div>
 
+      {/* AI Assistant Modal (OpenAI Standard NLP Agent) */}
+      {showAiModal ? (
+        <div className="nexus-modal-overlay">
+          <div className="nexus-modal-card w-full max-w-lg" style={{ maxWidth: "34rem" }}>
+            <div className="nexus-modal-header">
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <Sparkles className="h-4 w-4 text-[var(--nexus-accent)]" />
+                <span>{t.aiAssistant} &bull; Agente OpenAI</span>
+              </div>
+              <button
+                type="button"
+                className="nexus-toolbar-btn text-[var(--nexus-text-muted)]"
+                onClick={() => setShowAiModal(false)}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <p style={{ margin: 0, opacity: 0.8, fontSize: "0.75rem", lineHeight: 1.4 }}>
+              Desenvolva textos ou execute comandos no editor via Linguagem Natural. O modelo executará ferramentas como inserção, tabelas e formatação automaticamente (Modelo: <strong>{activeAiConfig.model}</strong>).
+            </p>
+
+            {/* Quick Prompts Chips */}
+            <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap" }}>
+              {[
+                { label: "✨ Melhorar Escrita", prompt: "Melhore a escrita e torne o tom mais corporativo e persuasivo." },
+                { label: "📝 Resumir", prompt: "Resuma o texto selecionado em tópicos claros e objetivos." },
+                { label: "🚀 Expandir", prompt: "Expanda as ideias do texto adicionando justificativas e detalhes." },
+                { label: "📊 Criar Tabela", prompt: "Crie uma tabela com 3 colunas e 4 linhas contendo dados realistas." },
+                { label: "✅ Corrigir Gramática", prompt: "Corrija quaisquer erros gramaticais e de pontuação no texto." },
+                { label: "🌐 Traduzir (EN)", prompt: "Traduza o texto selecionado para o Inglês mantendo o estilo profissional." },
+              ].map((chip, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="nexus-btn-secondary"
+                  style={{ fontSize: "0.7rem", padding: "0.2rem 0.5rem" }}
+                  onClick={() => {
+                    setAiPrompt(chip.prompt);
+                    void handleRunAi(chip.prompt);
+                  }}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              rows={3}
+              placeholder={t.aiPromptPlaceholder}
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              className="nexus-input-field"
+              style={{ width: "100%", resize: "vertical", fontFamily: "inherit" }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void handleRunAi();
+                }
+              }}
+            />
+
+            {/* Status / Feedback message */}
+            {aiLoading && (
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--nexus-accent)", fontSize: "0.75rem" }}>
+                <Sparkles className="h-3.5 w-3.5 animate-spin" />
+                <span>Processando com o modelo de IA...</span>
+              </div>
+            )}
+
+            {aiMessage && (
+              <div
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "0.375rem",
+                  backgroundColor: aiMessage.isError ? "rgba(239,68,68,0.12)" : "rgba(16,185,129,0.12)",
+                  color: aiMessage.isError ? "#ef4444" : "#10b981",
+                  border: `1px solid ${aiMessage.isError ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)"}`,
+                  fontSize: "0.75rem",
+                  lineHeight: 1.4,
+                }}
+              >
+                {aiMessage.text}
+              </div>
+            )}
+
+            {/* API Key fallback helper if not detected in env */}
+            {!activeAiConfig.apiKey && (
+              <div
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "0.375rem",
+                  backgroundColor: "rgba(245,158,11,0.1)",
+                  border: "1px solid rgba(245,158,11,0.3)",
+                  color: "#d97706",
+                  fontSize: "0.7rem",
+                }}
+              >
+                <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
+                  🔑 Chave OpenAI não detectada no ambiente
+                </div>
+                <div>
+                  Configure <code>VITE_OPENAI_API_KEY</code> no arquivo <code>.env</code> ou digite abaixo para testar:
+                </div>
+                <input
+                  type="password"
+                  placeholder="sk-..."
+                  value={customApiKey}
+                  onChange={(e) => setCustomApiKey(e.target.value)}
+                  className="nexus-input-field"
+                  style={{ marginTop: "0.35rem", width: "100%" }}
+                />
+              </div>
+            )}
+
+            <div className="nexus-modal-footer">
+              <button
+                type="button"
+                className="nexus-btn-secondary"
+                onClick={() => setShowAiModal(false)}
+              >
+                Fechar
+              </button>
+              <button
+                type="button"
+                className="nexus-btn-primary"
+                disabled={aiLoading || !aiPrompt.trim()}
+                onClick={() => void handleRunAi()}
+              >
+                {aiLoading ? "Processando..." : "Executar com IA"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* Find and Replace Modal */}
       {showSearchModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-lg border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-4 shadow-xl space-y-3 text-xs">
-            <div className="flex justify-between items-center font-semibold">
+        <div className="nexus-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="nexus-modal-card w-full max-w-sm rounded-lg border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-4 shadow-xl space-y-3 text-xs">
+            <div className="nexus-modal-header flex justify-between items-center font-semibold">
               <span>{t.searchAndReplace}</span>
-              <button type="button" onClick={() => setShowSearchModal(false)}>
+              <button
+                type="button"
+                className="nexus-toolbar-btn text-[var(--nexus-text-muted)]"
+                onClick={() => setShowSearchModal(false)}
+              >
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -1175,26 +1589,26 @@ export function NexusWysiwygEditor({
               placeholder="Buscar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)]"
+              className="nexus-input-field w-full px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)]"
             />
             <input
               type="text"
               placeholder="Substituir por..."
               value={replaceTerm}
               onChange={(e) => setReplaceTerm(e.target.value)}
-              className="w-full px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)]"
+              className="nexus-input-field w-full px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)]"
             />
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="nexus-modal-footer flex justify-end gap-2 pt-2">
               <button
                 type="button"
-                className="px-2 py-1 rounded border border-[var(--nexus-border)]"
+                className="nexus-btn-secondary px-2 py-1 rounded border border-[var(--nexus-border)]"
                 onClick={() => setShowSearchModal(false)}
               >
                 Fechar
               </button>
               <button
                 type="button"
-                className="px-2 py-1 rounded bg-[var(--nexus-accent)] text-white font-medium"
+                className="nexus-btn-primary px-2 py-1 rounded bg-[var(--nexus-accent)] text-white font-medium"
                 onClick={() => {
                   if (!searchTerm || !editor) return;
                   const currentHtml = editor.getHTML();
@@ -1226,6 +1640,7 @@ export function NexusWysiwygEditor({
         <div className="text-[11px] text-[var(--nexus-text-muted)]">Nexus WYSIWYG Editor</div>
       </footer>
     </div>
+    </EditorThemeContext.Provider>
   );
 }
 

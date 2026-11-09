@@ -8,7 +8,8 @@ Designed for mission-critical web applications requiring rich document authoring
 
 ## ✨ Features
 
-- 🏛️ **Classic Menubar & Modern Toolbar**: File, Edit, Insert, View, Tools, and Comments menus inspired by TinyMCE and Google Docs.
+- 🤖 **AI Copilot & NLP Agent**: Native integration with OpenAI-compatible models (OpenAI, Azure, Groq, Ollama, OpenRouter, vLLM). Write, rewrite, summarize, create tables, and control editor features via Natural Language prompts and function calling.
+- 🏛️ **Classic Menubar & Modern Toolbar**: File, Edit, Insert, Format, Table, Tools, Comments, and AI menus inspired by TinyMCE and Google Docs.
 - 📝 **Rich Text Formatting**: Headings (H1-H3), Bold, Italic, Underline, Bullet/Numbered Lists, Blockquotes, Alignments (Left, Center, Right, Justify).
 - 📊 **Advanced Table Editing**: Interactive table grid, add/delete rows and columns, header cells toggle, and cell merging.
 - 🖼️ **Image & Link Management**: Direct URL insertion, file upload adapter hook, and safe link validation.
@@ -125,7 +126,54 @@ const supabaseAdapter = createSupabaseAdapter({
 />
 ```
 
-### 3. Dynamic Merge Tags & Templates
+### 3. AI Agent & NLP Integration (OpenAI Standard)
+
+Nexus WYSIWYG Editor features a built-in AI Copilot compatible with the **OpenAI Chat Completions API standard** (works out-of-the-box with OpenAI, Azure, Groq, Ollama, OpenRouter, vLLM, and LM Studio).
+
+#### A. Configure via Environment Variables
+
+In your Vite / Next.js / React application, create or update your `.env` file:
+
+```env
+# OpenAI API Key (or key from any OpenAI-compatible provider)
+VITE_OPENAI_API_KEY=sk-your-openai-key-here
+
+# Base URL (default: https://api.openai.com/v1)
+VITE_OPENAI_BASE_URL=https://api.openai.com/v1
+
+# Model (default: gpt-4o-mini)
+VITE_OPENAI_MODEL=gpt-4o-mini
+```
+
+> **Note:** For Node/Next.js/CRA setups, `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `OPENAI_MODEL` in `process.env` are also automatically detected as fallbacks.
+
+#### B. Configure via Component Props
+
+You can also pass or override settings directly in the component:
+
+```tsx
+<NexusWysiwygEditor
+  value={content}
+  onChange={setContent}
+  aiConfig={{
+    apiKey: "sk-...",
+    baseUrl: "https://api.openai.com/v1", // or "https://api.groq.com/openai/v1" or "http://localhost:11434/v1"
+    model: "gpt-4o-mini",
+  }}
+  onAiAction={(result) => {
+    console.log("AI Tool executed:", result.toolUsed, result.message);
+  }}
+/>
+```
+
+The AI model automatically uses OpenAI Function Calling to perform actions such as:
+- `insert_content`: Generates and inserts formatted text/HTML.
+- `create_table`: Creates structured tables from prompt instructions (e.g. *"Create a 3x3 table with pricing plans"*).
+- `format_selection`: Applies formatting (bold, italic, alignments, lists) via natural language.
+- `replace_selection`: Rewrites, expands, or summarizes selected text.
+- `insert_merge_tag`: Inserts dynamic tags (e.g. `{{cliente_nome}}`).
+
+### 4. Dynamic Merge Tags & Templates
 
 ```tsx
 <NexusWysiwygEditor

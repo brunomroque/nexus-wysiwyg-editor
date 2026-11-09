@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";
-import { cn } from "./utils";
+import { cn, useEditorTheme } from "./utils";
 
 const ContextMenu = ContextMenuPrimitive.Root;
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
@@ -19,7 +19,7 @@ const ContextMenuSubTrigger = React.forwardRef<
   <ContextMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1 text-xs outline-none focus:bg-[var(--nexus-surface-2)] data-[state=open]:bg-[var(--nexus-surface-2)]",
+      "nexus-context-sub-trigger nexus-dropdown-sub-trigger flex cursor-default select-none items-center rounded-sm px-2 py-1 text-xs outline-none focus:bg-[var(--nexus-surface-2)] data-[state=open]:bg-[var(--nexus-surface-2)]",
       inset && "pl-8",
       className,
     )}
@@ -34,33 +34,55 @@ ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName;
 const ContextMenuSubContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubContent>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubContent>
->(({ className, ...props }, ref) => (
-  <ContextMenuPrimitive.SubContent
-    ref={ref}
-    className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-1 text-[var(--nexus-text)] shadow-md animate-in",
-      className,
-    )}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const theme = useEditorTheme();
+  const isDark =
+    theme === "dark" ||
+    (theme === "auto" &&
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+
+  return (
+    <ContextMenuPrimitive.SubContent
+      ref={ref}
+      data-theme={isDark ? "dark" : "light"}
+      className={cn(
+        "nexus-context-content nexus-context-sub-content nexus-dropdown-content z-50 min-w-[8rem] overflow-hidden rounded-md border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-1 text-[var(--nexus-text)] shadow-md animate-in",
+        isDark && "dark",
+        className,
+      )}
+      {...props}
+    />
+  );
+});
 ContextMenuSubContent.displayName = ContextMenuPrimitive.SubContent.displayName;
 
 const ContextMenuContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <ContextMenuPrimitive.Portal>
-    <ContextMenuPrimitive.Content
-      ref={ref}
-      className={cn(
-        "z-50 min-w-[11rem] overflow-hidden rounded-md border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-1 text-[var(--nexus-text)] shadow-xl animate-in",
-        className,
-      )}
-      {...props}
-    />
-  </ContextMenuPrimitive.Portal>
-));
+>(({ className, ...props }, ref) => {
+  const theme = useEditorTheme();
+  const isDark =
+    theme === "dark" ||
+    (theme === "auto" &&
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+
+  return (
+    <ContextMenuPrimitive.Portal>
+      <ContextMenuPrimitive.Content
+        ref={ref}
+        data-theme={isDark ? "dark" : "light"}
+        className={cn(
+          "nexus-context-content nexus-dropdown-content z-50 min-w-[11rem] overflow-hidden rounded-md border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-1 text-[var(--nexus-text)] shadow-xl animate-in",
+          isDark && "dark",
+          className,
+        )}
+        {...props}
+      />
+    </ContextMenuPrimitive.Portal>
+  );
+});
 ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName;
 
 const ContextMenuItem = React.forwardRef<
@@ -72,7 +94,7 @@ const ContextMenuItem = React.forwardRef<
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1 text-xs outline-none transition-colors hover:bg-[var(--nexus-surface-2)] focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "nexus-context-item nexus-dropdown-item relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1 text-xs outline-none transition-colors hover:bg-[var(--nexus-surface-2)] focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className,
     )}
@@ -88,7 +110,7 @@ const ContextMenuCheckboxItem = React.forwardRef<
   <ContextMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1 pl-8 pr-2 text-xs outline-none transition-colors focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "nexus-context-item nexus-dropdown-item relative flex cursor-default select-none items-center rounded-sm py-1 pl-8 pr-2 text-xs outline-none transition-colors focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     checked={checked}
@@ -111,7 +133,7 @@ const ContextMenuRadioItem = React.forwardRef<
   <ContextMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1 pl-8 pr-2 text-xs outline-none transition-colors focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "nexus-context-item nexus-dropdown-item relative flex cursor-default select-none items-center rounded-sm py-1 pl-8 pr-2 text-xs outline-none transition-colors focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     {...props}
@@ -135,7 +157,7 @@ const ContextMenuLabel = React.forwardRef<
   <ContextMenuPrimitive.Label
     ref={ref}
     className={cn(
-      "px-2 py-1 text-[11px] font-semibold text-[var(--nexus-text-muted)]",
+      "nexus-context-label nexus-dropdown-label px-2 py-1 text-[11px] font-semibold text-[var(--nexus-text-muted)]",
       inset && "pl-8",
       className,
     )}
@@ -150,7 +172,7 @@ const ContextMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ContextMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[var(--nexus-border)]", className)}
+    className={cn("nexus-context-separator nexus-dropdown-separator -mx-1 my-1 h-px bg-[var(--nexus-border)]", className)}
     {...props}
   />
 ));
@@ -172,4 +194,3 @@ export {
   ContextMenuSubTrigger,
   ContextMenuRadioGroup,
 };
-

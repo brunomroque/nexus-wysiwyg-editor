@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";
-import { cn } from "./utils";
+import { cn, useEditorTheme } from "./utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -19,7 +19,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-xs outline-none focus:bg-[var(--nexus-surface-2)] data-[state=open]:bg-[var(--nexus-surface-2)]",
+      "nexus-dropdown-sub-trigger flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-xs outline-none focus:bg-[var(--nexus-surface-2)] data-[state=open]:bg-[var(--nexus-surface-2)]",
       inset && "pl-8",
       className,
     )}
@@ -34,34 +34,56 @@ DropdownMenuSubTrigger.displayName = DropdownMenuPrimitive.SubTrigger.displayNam
 const DropdownMenuSubContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
->(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.SubContent
-    ref={ref}
-    className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-1 text-[var(--nexus-text)] shadow-lg animate-in data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1",
-      className,
-    )}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const theme = useEditorTheme();
+  const isDark =
+    theme === "dark" ||
+    (theme === "auto" &&
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+
+  return (
+    <DropdownMenuPrimitive.SubContent
+      ref={ref}
+      data-theme={isDark ? "dark" : "light"}
+      className={cn(
+        "nexus-dropdown-content nexus-dropdown-sub-content z-50 min-w-[8rem] overflow-hidden rounded-md border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-1 text-[var(--nexus-text)] shadow-lg animate-in data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1",
+        isDark && "dark",
+        className,
+      )}
+      {...props}
+    />
+  );
+});
 DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName;
 
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <DropdownMenuPrimitive.Portal>
-    <DropdownMenuPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-50 min-w-[10rem] overflow-hidden rounded-md border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-1 text-[var(--nexus-text)] shadow-md animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className,
-      )}
-      {...props}
-    />
-  </DropdownMenuPrimitive.Portal>
-));
+>(({ className, sideOffset = 4, ...props }, ref) => {
+  const theme = useEditorTheme();
+  const isDark =
+    theme === "dark" ||
+    (theme === "auto" &&
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.Content
+        ref={ref}
+        sideOffset={sideOffset}
+        data-theme={isDark ? "dark" : "light"}
+        className={cn(
+          "nexus-dropdown-content z-50 min-w-[10rem] overflow-hidden rounded-md border border-[var(--nexus-border)] bg-[var(--nexus-surface-1)] p-1 text-[var(--nexus-text)] shadow-md animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          isDark && "dark",
+          className,
+        )}
+        {...props}
+      />
+    </DropdownMenuPrimitive.Portal>
+  );
+});
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
 const DropdownMenuItem = React.forwardRef<
@@ -73,7 +95,7 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1 text-xs outline-none transition-colors hover:bg-[var(--nexus-surface-2)] focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "nexus-dropdown-item relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1 text-xs outline-none transition-colors hover:bg-[var(--nexus-surface-2)] focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className,
     )}
@@ -89,7 +111,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-xs outline-none transition-colors focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "nexus-dropdown-item nexus-dropdown-checkbox-item relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-xs outline-none transition-colors focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     checked={checked}
@@ -112,7 +134,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-xs outline-none transition-colors focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "nexus-dropdown-item nexus-dropdown-radio-item relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-xs outline-none transition-colors focus:bg-[var(--nexus-surface-2)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     {...props}
@@ -136,7 +158,7 @@ const DropdownMenuLabel = React.forwardRef<
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
-      "px-2 py-1 text-[11px] font-semibold text-[var(--nexus-text-muted)]",
+      "nexus-dropdown-label px-2 py-1 text-[11px] font-semibold text-[var(--nexus-text-muted)]",
       inset && "pl-8",
       className,
     )}
@@ -151,7 +173,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[var(--nexus-border)]", className)}
+    className={cn("nexus-dropdown-separator -mx-1 my-1 h-px bg-[var(--nexus-border)]", className)}
     {...props}
   />
 ));
@@ -173,4 +195,3 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 };
-

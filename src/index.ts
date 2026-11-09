@@ -92,6 +92,18 @@ export type {
   ImageUploadHandler,
 } from "./adapters/types";
 
+// AI Agent and NLP Copilot (OpenAI Standard)
+export {
+  sendOpenAiAgentRequest,
+  executeAiToolAction,
+  resolveOpenAiConfig,
+  EDITOR_AI_TOOLS,
+  type OpenAiConfig,
+  type AiAgentMessage,
+  type AiToolCall,
+  type AiExecutionResult,
+} from "./core/openAiAgent";
+
 // i18n
 export {
   getTranslations,

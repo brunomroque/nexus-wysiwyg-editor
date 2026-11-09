@@ -4,7 +4,16 @@ export type EditorTranslations = {
   menuView: string;
   menuInsert: string;
   menuFormat: string;
+  menuTable: string;
   menuTools: string;
+  menuAi: string;
+  aiAssistant: string;
+  aiPromptPlaceholder: string;
+  aiImproveWriting: string;
+  aiSummarize: string;
+  aiExpand: string;
+  aiFixGrammar: string;
+  aiTranslate: string;
   menuComments: string;
   menuHelp: string;
   fullscreen: string;
