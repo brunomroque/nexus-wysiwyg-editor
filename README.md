@@ -169,13 +169,33 @@ const supabaseAdapter = createSupabaseAdapter({
 
 ---
 
+## 💖 Sponsoring & Donations / Apoie o Projeto
+
+Nexus WYSIWYG Editor is an open-source project distributed under the MIT license. If this component saves you or your company development time, or if you use it in **commercial applications and enterprise SaaS**, please consider supporting its ongoing development and maintenance!
+
+> *"Se o Nexus WYSIWYG Editor agregou valor ao seu negócio ou facilitou o seu desenvolvimento, considere apoiar o projeto com uma doação ou patrocínio!"*
+
+### International Supporters (Global)
+- ☕ **Buy Me a Coffee**: [buymeacoffee.com/brunomroque](https://buymeacoffee.com/brunomroque)
+- 🪙 **Ko-fi**: [ko-fi.com/brunomroque](https://ko-fi.com/brunomroque)
+- 💖 **GitHub Sponsors**: [github.com/sponsors/brunomroque](https://github.com/sponsors/brunomroque)
+
+### Brasil (Pix)
+Você pode enviar qualquer valor diretamente via **Pix** utilizando a chave aleatória abaixo:
+
+```text
+6273ae2e-7345-405b-873c-6749946c8488
+```
+
+---
+
 ## 💻 Development & Demo
 
 Run the demo app locally:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/nexus-wysiwyg-editor.git
+git clone https://github.com/brunomroque/nexus-wysiwyg-editor.git
 cd nexus-wysiwyg-editor
 
 # Install dependencies and build
