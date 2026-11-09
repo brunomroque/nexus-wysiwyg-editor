@@ -20,22 +20,24 @@
 
 ---
 
-<!-- ==================== EDITOR APPLICATION MENUBAR NAVIGATION ==================== -->
-<table align="center" width="100%" style="border-collapse: collapse; text-align: center; background: #0f172a; border-radius: 8px;">
-  <tr>
-    <td style="padding: 10px; font-weight: 600;">
-      <a href="#-visão-geral--interface-do-editor">🖥️ Visão da UI</a> &nbsp;|&nbsp;
-      <a href="#-recursos-principais">✨ Recursos</a> &nbsp;|&nbsp;
-      <a href="#-tabela-comparativa-por-que-o-nexus">⚖️ Comparativo</a> &nbsp;|&nbsp;
-      <a href="#-instalação">📦 Instalação</a> &nbsp;|&nbsp;
-      <a href="#-quick-start">🚀 Quick Start</a> &nbsp;|&nbsp;
-      <a href="#-agente-ia--copilot-openai">🤖 Copilot IA</a> &nbsp;|&nbsp;
-      <a href="#-adapters--backend-supabase">🔌 Adapters</a> &nbsp;|&nbsp;
-      <a href="#-propriedades-do-componente-props">⚙️ API Props</a> &nbsp;|&nbsp;
-      <a href="#-apoie-o-projeto--sponsoring">💖 Apoiar</a>
-    </td>
-  </tr>
-</table>
+<!-- ==================== LIVE DEMO & NAVIGATION ==================== -->
+<p align="center">
+  <a href="https://brunomroque.github.io/nexus-wysiwyg-editor/">
+    <img src="https://img.shields.io/badge/▶_Testar_Live_Demo_Online-brunomroque.github.io-8b5cf6?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Testar Live Demo Online" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="#-visão-geral--interface-do-editor"><b>🖥️ Visão da UI</b></a> &bull;
+  <a href="#-recursos-principais"><b>✨ Recursos</b></a> &bull;
+  <a href="#-tabela-comparativa-por-que-o-nexus"><b>⚖️ Comparativo</b></a> &bull;
+  <a href="#-instalação"><b>📦 Instalação</b></a> &bull;
+  <a href="#-quick-start"><b>🚀 Quick Start</b></a> &bull;
+  <a href="#-agente-ia--copilot-openai"><b>🤖 Copilot IA</b></a> &bull;
+  <a href="#-adapters--backend-supabase"><b>🔌 Adapters</b></a> &bull;
+  <a href="#-propriedades-do-componente-props"><b>⚙️ API Props</b></a> &bull;
+  <a href="#-apoie-o-projeto--sponsoring"><b>💖 Apoiar</b></a>
+</p>
 
 ---
 
