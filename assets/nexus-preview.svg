@@ -1,0 +1,453 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="auto">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="winBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <!-- Glowing Border -->
+    <linearGradient id="winBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.8" />
+      <stop offset="40%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0.3" />
+    </linearGradient>
+
+    <!-- AI Gradient -->
+    <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="50%" stop-color="#ec4899" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <!-- Toolbar Active Item Gradient -->
+    <linearGradient id="btnActive" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.2" />
+    </linearGradient>
+
+    <!-- Shadow Filters -->
+    <filter id="winShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#000000" flood-opacity="0.75" />
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#a855f7" flood-opacity="0.2" />
+    </filter>
+
+    <filter id="glowSubtle" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+
+  <!-- ==================== MAIN WINDOW SHELL ==================== -->
+  <g filter="url(#winShadow)">
+    <rect x="20" y="20" width="960" height="580" rx="16" fill="url(#winBg)" stroke="url(#winBorder)" stroke-width="1.5" />
+  </g>
+
+  <!-- ==================== TITLE BAR ==================== -->
+  <g transform="translate(20, 20)">
+    <!-- Window Bar Background -->
+    <path d="M 0 16 Q 0 0 16 0 L 944 0 Q 960 0 960 16 L 960 40 L 0 40 Z" fill="#090d16" />
+    <line x1="0" y1="40" x2="960" y2="40" stroke="#1e293b" stroke-width="1" />
+
+    <!-- macOS Traffic Lights -->
+    <circle cx="24" cy="20" r="5.5" fill="#ef4444" />
+    <circle cx="42" cy="20" r="5.5" fill="#f59e0b" />
+    <circle cx="60" cy="20" r="5.5" fill="#10b981" />
+
+    <!-- Window Title -->
+    <g transform="translate(380, 24)">
+      <rect x="-8" y="-12" width="220" height="22" rx="6" fill="#131d2e" stroke="#1e293b" stroke-width="1" />
+      <text x="10" y="3" font-size="11" font-weight="600" fill="#94a3b8" class="font-sans" letter-spacing="0.02em">
+        📄 master-agreement.nexus
+      </text>
+      <circle cx="190" cy="0" r="3.5" fill="#10b981" />
+    </g>
+
+    <!-- Cloud Status Badge -->
+    <g transform="translate(820, 12)">
+      <rect x="0" y="0" width="120" height="20" rx="10" fill="rgba(16, 185, 129, 0.12)" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1" />
+      <circle cx="12" cy="10" r="3" fill="#10b981" />
+      <text x="22" y="14" font-size="9.5" font-weight="600" fill="#34d399" class="font-sans">Auto-saved (Cloud)</text>
+    </g>
+  </g>
+
+  <!-- ==================== MENUBAR ==================== -->
+  <g transform="translate(20, 60)">
+    <rect x="0" y="0" width="960" height="30" fill="#0f172a" />
+    <line x1="0" y1="30" x2="960" y2="30" stroke="#1e293b" stroke-width="1" />
+
+    <text x="20" y="20" font-size="12" font-weight="500" fill="#e2e8f0" class="font-sans">Arquivo</text>
+    <text x="78" y="20" font-size="12" font-weight="500" fill="#94a3b8" class="font-sans">Editar</text>
+    <text x="126" y="20" font-size="12" font-weight="500" fill="#94a3b8" class="font-sans">Inserir</text>
+    <text x="178" y="20" font-size="12" font-weight="500" fill="#94a3b8" class="font-sans">Formatar</text>
+    <text x="242" y="20" font-size="12" font-weight="500" fill="#94a3b8" class="font-sans">Tabela</text>
+    <text x="296" y="20" font-size="12" font-weight="500" fill="#94a3b8" class="font-sans">Ferramentas</text>
+    <text x="382" y="20" font-size="12" font-weight="500" fill="#94a3b8" class="font-sans">Comentários</text>
+
+    <!-- AI Menu Item (Glowing) -->
+    <g transform="translate(470, 5)">
+      <rect x="0" y="0" width="112" height="20" rx="4" fill="rgba(168, 85, 247, 0.18)" stroke="rgba(168, 85, 247, 0.4)" stroke-width="1" />
+      <text x="10" y="14" font-size="11" font-weight="700" fill="#c084fc" class="font-sans">✦ Nexus AI</text>
+      <circle cx="98" cy="10" r="3" fill="#38bdf8" />
+    </g>
+
+    <!-- Right Controls: Theme + Share -->
+    <g transform="translate(850, 5)">
+      <rect x="0" y="0" width="90" height="20" rx="4" fill="#1e293b" />
+      <text x="14" y="14" font-size="10.5" font-weight="600" fill="#cbd5e1" class="font-sans">Exportar ▾</text>
+    </g>
+  </g>
+
+  <!-- ==================== TOOLBAR ==================== -->
+  <g transform="translate(20, 90)">
+    <rect x="0" y="0" width="960" height="42" fill="#131d2e" />
+    <line x1="0" y1="42" x2="960" y2="42" stroke="#1e293b" stroke-width="1" />
+
+    <!-- Style Dropdown: Heading 1 -->
+    <g transform="translate(16, 8)">
+      <rect x="0" y="0" width="98" height="26" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1" />
+      <text x="10" y="17" font-size="11.5" font-weight="600" fill="#f1f5f9" class="font-sans">Título 1 ▾</text>
+    </g>
+
+    <!-- Separator -->
+    <line x1="124" y1="10" x2="124" y2="32" stroke="#334155" stroke-width="1" />
+
+    <!-- Formatting Buttons: Bold, Italic, Underline, Strikethrough -->
+    <g transform="translate(134, 8)">
+      <!-- Bold (Active) -->
+      <rect x="0" y="0" width="26" height="26" rx="4" fill="url(#btnActive)" stroke="#3b82f6" stroke-width="1" />
+      <text x="8" y="18" font-size="13" font-weight="800" fill="#60a5fa" class="font-sans">B</text>
+
+      <!-- Italic -->
+      <rect x="30" y="0" width="26" height="26" rx="4" fill="transparent" />
+      <text x="39" y="18" font-size="13" font-style="italic" font-weight="700" fill="#94a3b8" class="font-sans">I</text>
+
+      <!-- Underline -->
+      <rect x="60" y="0" width="26" height="26" rx="4" fill="transparent" />
+      <text x="68" y="18" font-size="13" text-decoration="underline" font-weight="600" fill="#94a3b8" class="font-sans">U</text>
+
+      <!-- Strikethrough -->
+      <rect x="90" y="0" width="26" height="26" rx="4" fill="transparent" />
+      <text x="98" y="18" font-size="13" text-decoration="line-through" font-weight="600" fill="#94a3b8" class="font-sans">S</text>
+    </g>
+
+    <!-- Separator -->
+    <line x1="258" y1="10" x2="258" y2="32" stroke="#334155" stroke-width="1" />
+
+    <!-- Alignment Buttons -->
+    <g transform="translate(268, 8)">
+      <!-- Left Align (Active) -->
+      <rect x="0" y="0" width="26" height="26" rx="4" fill="url(#btnActive)" stroke="#3b82f6" stroke-width="1" />
+      <line x1="6" y1="9" x2="20" y2="9" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round" />
+      <line x1="6" y1="13" x2="16" y2="13" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round" />
+      <line x1="6" y1="17" x2="18" y2="17" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round" />
+
+      <!-- Center Align -->
+      <rect x="30" y="0" width="26" height="26" rx="4" fill="transparent" />
+      <line x1="38" y1="9" x2="48" y2="9" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />
+      <line x1="36" y1="13" x2="50" y2="13" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />
+      <line x1="39" y1="17" x2="47" y2="17" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />
+
+      <!-- Right Align -->
+      <rect x="60" y="0" width="26" height="26" rx="4" fill="transparent" />
+      <line x1="66" y1="9" x2="80" y2="9" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />
+      <line x1="70" y1="13" x2="80" y2="13" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />
+      <line x1="68" y1="17" x2="80" y2="17" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />
+    </g>
+
+    <!-- Separator -->
+    <line x1="364" y1="10" x2="364" y2="32" stroke="#334155" stroke-width="1" />
+
+    <!-- Table, Image, Link, Merge Tags -->
+    <g transform="translate(374, 8)">
+      <!-- Table Button -->
+      <rect x="0" y="0" width="62" height="26" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1" />
+      <text x="8" y="17" font-size="11" font-weight="600" fill="#cbd5e1" class="font-sans">⊞ Tabela</text>
+
+      <!-- Merge Tag Button -->
+      <rect x="68" y="0" width="80" height="26" rx="4" fill="rgba(168, 85, 247, 0.12)" stroke="rgba(168, 85, 247, 0.3)" stroke-width="1" />
+      <text x="76" y="17" font-size="11" font-weight="600" fill="#c084fc" class="font-sans">{ } Tag Din</text>
+
+      <!-- Link Button -->
+      <rect x="154" y="0" width="26" height="26" rx="4" fill="#1e293b" />
+      <text x="162" y="17" font-size="12" fill="#94a3b8">🔗</text>
+
+      <!-- Image Button -->
+      <rect x="184" y="0" width="26" height="26" rx="4" fill="#1e293b" />
+      <text x="192" y="17" font-size="12" fill="#94a3b8">🖼</text>
+    </g>
+
+    <!-- Right-Side Features: AI Button & A11y Badge -->
+    <g transform="translate(710, 8)">
+      <!-- A11y Compliance Pill -->
+      <rect x="0" y="0" width="88" height="26" rx="13" fill="rgba(16, 185, 129, 0.12)" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1" />
+      <text x="12" y="17" font-size="10.5" font-weight="700" fill="#34d399" class="font-sans">✓ A11y 100%</text>
+
+      <!-- Copilot AI Glowing CTA -->
+      <g transform="translate(98, 0)">
+        <rect x="0" y="0" width="134" height="26" rx="6" fill="url(#aiGrad)" />
+        <text x="14" y="17" font-size="11" font-weight="800" fill="#ffffff" class="font-sans" letter-spacing="0.03em">
+          ✦ AI COPILOT
+        </text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== WORKSPACE (CANVAS + SIDEBAR) ==================== -->
+  <g transform="translate(20, 132)">
+
+    <!-- ==================== LEFT CANVAS (DOCUMENT PAPER) ==================== -->
+    <g transform="translate(24, 18)">
+      <!-- Document Page Background -->
+      <rect x="0" y="0" width="650" height="400" rx="8" fill="#0d1525" stroke="#1e293b" stroke-width="1" />
+
+      <!-- Document Content -->
+      <g transform="translate(36, 32)">
+        <!-- Document Tag / Category -->
+        <rect x="0" y="0" width="94" height="18" rx="4" fill="rgba(56, 189, 248, 0.12)" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1" />
+        <text x="10" y="13" font-size="9" font-weight="700" fill="#38bdf8" class="font-sans" letter-spacing="0.08em">CONTRATO SLA</text>
+
+        <!-- Main Title -->
+        <text x="0" y="44" font-size="20" font-weight="800" fill="#f8fafc" class="font-sans">
+          Nexus WYSIWYG Editor — Enterprise SLA
+        </text>
+
+        <!-- Paragraph with dynamic merge tags -->
+        <g transform="translate(0, 60)">
+          <text x="0" y="15" font-size="12" fill="#94a3b8" class="font-sans">
+            Este instrumento consolida os serviços para o cliente
+          </text>
+          
+          <!-- Merge Tag Pill 1 -->
+          <g transform="translate(280, 2)">
+            <rect x="0" y="0" width="102" height="18" rx="4" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" stroke-width="1" />
+            <text x="8" y="13" font-size="10.5" font-weight="700" fill="#e879f9" class="font-mono">{{cliente_nome}}</text>
+          </g>
+
+          <text x="390" y="15" font-size="12" fill="#94a3b8" class="font-sans">
+            e sua organização
+          </text>
+
+          <text x="0" y="36" font-size="12" fill="#94a3b8" class="font-sans">
+            em conjunto com
+          </text>
+
+          <!-- Merge Tag Pill 2 -->
+          <g transform="translate(94, 23)">
+            <rect x="0" y="0" width="76" height="18" rx="4" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" stroke-width="1" />
+            <text x="8" y="13" font-size="10.5" font-weight="700" fill="#e879f9" class="font-mono">{{empresa}}</text>
+          </g>
+
+          <text x="178" y="36" font-size="12" fill="#94a3b8" class="font-sans">
+            , com vigência estipulada a partir de hoje.
+          </text>
+        </g>
+
+        <!-- Document Interactive Table -->
+        <g transform="translate(0, 116)">
+          <!-- Table Container -->
+          <rect x="0" y="0" width="578" height="96" rx="6" fill="#10192b" stroke="#22324b" stroke-width="1" />
+
+          <!-- Table Header -->
+          <path d="M 0 6 Q 0 0 6 0 L 572 0 Q 578 0 578 6 L 578 28 L 0 28 Z" fill="#162238" />
+          <line x1="0" y1="28" x2="578" y2="28" stroke="#22324b" stroke-width="1" />
+
+          <text x="16" y="18" font-size="10.5" font-weight="700" fill="#93c5fd" class="font-sans">RECURSO</text>
+          <text x="170" y="18" font-size="10.5" font-weight="700" fill="#93c5fd" class="font-sans">STACK &amp; TECNOLOGIA</text>
+          <text x="370" y="18" font-size="10.5" font-weight="700" fill="#93c5fd" class="font-sans">STATUS</text>
+          <text x="475" y="18" font-size="10.5" font-weight="700" fill="#93c5fd" class="font-sans">CONFORMIDADE</text>
+
+          <!-- Row 1 -->
+          <line x1="0" y1="52" x2="578" y2="52" stroke="#1a273e" stroke-width="1" />
+          <text x="16" y="44" font-size="11" font-weight="600" fill="#f1f5f9" class="font-sans">AI Copilot Agent</text>
+          <text x="170" y="44" font-size="11" fill="#94a3b8" class="font-sans">OpenAI Functions / LLM</text>
+          <g transform="translate(370, 34)">
+            <circle cx="4" cy="5" r="3.5" fill="#10b981" />
+            <text x="14" y="9" font-size="10" font-weight="700" fill="#34d399" class="font-sans">NATIVO</text>
+          </g>
+          <text x="475" y="44" font-size="10.5" fill="#38bdf8" class="font-sans">Zero Paywall</text>
+
+          <!-- Row 2 -->
+          <line x1="0" y1="74" x2="578" y2="74" stroke="#1a273e" stroke-width="1" />
+          <text x="16" y="66" font-size="11" font-weight="600" fill="#f1f5f9" class="font-sans">Acessibilidade &amp; SEO</text>
+          <text x="170" y="66" font-size="11" fill="#94a3b8" class="font-sans">Automated WCAG Audit</text>
+          <g transform="translate(370, 56)">
+            <circle cx="4" cy="5" r="3.5" fill="#10b981" />
+            <text x="14" y="9" font-size="10" font-weight="700" fill="#34d399" class="font-sans">100% PASS</text>
+          </g>
+          <text x="475" y="66" font-size="10.5" fill="#a78bfa" class="font-sans">WCAG 2.1 AAA</text>
+
+          <!-- Row 3 -->
+          <text x="16" y="88" font-size="11" font-weight="600" fill="#f1f5f9" class="font-sans">Adapters de Backend</text>
+          <text x="170" y="88" font-size="11" fill="#94a3b8" class="font-sans">Supabase / REST / Local</text>
+          <g transform="translate(370, 78)">
+            <circle cx="4" cy="5" r="3.5" fill="#38bdf8" />
+            <text x="14" y="9" font-size="10" font-weight="700" fill="#7dd3fc" class="font-sans">PLUG &amp; PLAY</text>
+          </g>
+          <text x="475" y="88" font-size="10.5" fill="#cbd5e1" class="font-sans">Postgres Ready</text>
+        </g>
+
+        <!-- FLOATING AI COPILOT PROMPT BOX (Simulating interactive Tool in Action) -->
+        <g transform="translate(20, 228)" filter="url(#glowSubtle)">
+          <!-- Box Background -->
+          <rect x="0" y="0" width="538" height="92" rx="10" fill="#17122b" stroke="#a855f7" stroke-width="1.5" />
+
+          <!-- Prompt Header -->
+          <g transform="translate(14, 12)">
+            <text x="0" y="10" font-size="11" font-weight="800" fill="#ec4899" class="font-sans">✦ NEXUS AI COPILOT</text>
+            <text x="120" y="10" font-size="9.5" fill="#94a3b8" class="font-sans">• OpenAI Function Calling</text>
+          </g>
+
+          <!-- User Prompt Text Box -->
+          <g transform="translate(14, 28)">
+            <rect x="0" y="0" width="510" height="28" rx="6" fill="#0d0a1a" stroke="#4c1d95" stroke-width="1" />
+            <text x="10" y="18" font-size="11" fill="#f1f5f9" class="font-sans">
+              "Resuma os termos de SLA e crie uma linha de assinatura para os diretores"
+            </text>
+            <!-- Blinking cursor -->
+            <line x1="472" y1="8" x2="472" y2="20" stroke="#a855f7" stroke-width="2" />
+          </g>
+
+          <!-- Action Buttons -->
+          <g transform="translate(14, 62)">
+            <!-- Generate & Insert CTA -->
+            <rect x="0" y="0" width="128" height="20" rx="4" fill="url(#aiGrad)" />
+            <text x="14" y="14" font-size="10" font-weight="800" fill="#ffffff" class="font-sans">✨ Gerar e Inserir</text>
+
+            <!-- Function tool pills -->
+            <g transform="translate(138, 0)">
+              <rect x="0" y="0" width="102" height="20" rx="4" fill="#241a45" stroke="#6b21a8" stroke-width="1" />
+              <text x="8" y="14" font-size="9" font-weight="600" fill="#d8b4fe" class="font-mono">insert_table()</text>
+            </g>
+
+            <g transform="translate(248, 0)">
+              <rect x="0" y="0" width="112" height="20" rx="4" fill="#241a45" stroke="#6b21a8" stroke-width="1" />
+              <text x="8" y="14" font-size="9" font-weight="600" fill="#d8b4fe" class="font-mono">format_selection()</text>
+            </g>
+
+            <!-- Discard -->
+            <text x="470" y="14" font-size="10" font-weight="600" fill="#94a3b8" class="font-sans">Cancelar</text>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- ==================== RIGHT SIDEBAR (COMMENTS & AUDIT) ==================== -->
+    <g transform="translate(700, 18)">
+      <!-- Sidebar Container -->
+      <rect x="0" y="0" width="236" height="400" rx="8" fill="#0d1525" stroke="#1e293b" stroke-width="1" />
+
+      <!-- Sidebar Tabs -->
+      <g transform="translate(12, 12)">
+        <rect x="0" y="0" width="102" height="24" rx="4" fill="#1e293b" />
+        <text x="14" y="16" font-size="10" font-weight="700" fill="#f8fafc" class="font-sans">💬 Revisões (2)</text>
+
+        <rect x="108" y="0" width="98" height="24" rx="4" fill="transparent" />
+        <text x="122" y="16" font-size="10" font-weight="600" fill="#64748b" class="font-sans">Auditoria</text>
+      </g>
+
+      <!-- Comment Card 1 -->
+      <g transform="translate(12, 48)">
+        <rect x="0" y="0" width="212" height="96" rx="6" fill="#131d2e" stroke="#22324b" stroke-width="1" />
+
+        <!-- User Avatar & Name -->
+        <circle cx="18" cy="18" r="9" fill="#8b5cf6" />
+        <text x="13" y="21" font-size="8.5" font-weight="800" fill="#ffffff" class="font-sans">BR</text>
+
+        <text x="34" y="16" font-size="10.5" font-weight="700" fill="#f1f5f9" class="font-sans">Bruno Roque</text>
+        <text x="34" y="27" font-size="8.5" fill="#64748b" class="font-sans">Autor • há 3 min</text>
+
+        <!-- Comment Text -->
+        <text x="12" y="46" font-size="10" fill="#cbd5e1" class="font-sans">
+          "As tags dinâmicas estão
+        </text>
+        <text x="12" y="59" font-size="10" fill="#cbd5e1" class="font-sans">
+          perfeitas com o Supabase!"
+        </text>
+
+        <!-- Status Tag -->
+        <g transform="translate(12, 70)">
+          <rect x="0" y="0" width="76" height="16" rx="8" fill="rgba(16, 185, 129, 0.15)" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1" />
+          <text x="8" y="12" font-size="8.5" font-weight="700" fill="#34d399" class="font-sans">✓ Aprovado</text>
+        </g>
+      </g>
+
+      <!-- Comment Card 2 (Suggested Edit) -->
+      <g transform="translate(12, 154)">
+        <rect x="0" y="0" width="212" height="106" rx="6" fill="#131d2e" stroke="#22324b" stroke-width="1" />
+
+        <!-- User Avatar & Name -->
+        <circle cx="18" cy="18" r="9" fill="#06b6d4" />
+        <text x="14" y="21" font-size="8.5" font-weight="800" fill="#ffffff" class="font-sans">AI</text>
+
+        <text x="34" y="16" font-size="10.5" font-weight="700" fill="#f1f5f9" class="font-sans">Nexus Copilot</text>
+        <text x="34" y="27" font-size="8.5" fill="#a855f7" class="font-sans">Sugestão de Edição</text>
+
+        <!-- Suggestion Diff -->
+        <g transform="translate(10, 36)">
+          <rect x="0" y="0" width="192" height="36" rx="4" fill="#0b1120" stroke="#1e293b" stroke-width="1" />
+          <text x="6" y="14" font-size="9" fill="#f87171" class="font-mono">- prazo de 30 dias</text>
+          <text x="6" y="28" font-size="9" fill="#4ade80" class="font-mono">+ prazo conforme SLA Contratual</text>
+        </g>
+
+        <!-- Accept / Reject Actions -->
+        <g transform="translate(10, 80)">
+          <rect x="0" y="0" width="62" height="18" rx="4" fill="#10b981" />
+          <text x="10" y="13" font-size="9" font-weight="700" fill="#ffffff" class="font-sans">Aceitar</text>
+
+          <rect x="70" y="0" width="58" height="18" rx="4" fill="#334155" />
+          <text x="80" y="13" font-size="9" font-weight="600" fill="#94a3b8" class="font-sans">Rejeitar</text>
+        </g>
+      </g>
+
+      <!-- Document Stats Card -->
+      <g transform="translate(12, 270)">
+        <rect x="0" y="0" width="212" height="114" rx="6" fill="#090d16" stroke="#1e293b" stroke-width="1" />
+
+        <text x="12" y="18" font-size="9.5" font-weight="700" fill="#94a3b8" class="font-sans" letter-spacing="0.06em">METRICAS DO DOCUMENTO</text>
+
+        <g transform="translate(12, 30)">
+          <text x="0" y="12" font-size="9.5" fill="#64748b" class="font-sans">Palavras:</text>
+          <text x="188" y="12" font-size="10" font-weight="700" text-anchor="end" fill="#f1f5f9" class="font-mono">482</text>
+
+          <text x="0" y="30" font-size="9.5" fill="#64748b" class="font-sans">Tempo de Leitura:</text>
+          <text x="188" y="30" font-size="10" font-weight="700" text-anchor="end" fill="#f1f5f9" class="font-mono">~2 min</text>
+
+          <text x="0" y="48" font-size="9.5" fill="#64748b" class="font-sans">Links Verificados:</text>
+          <text x="188" y="48" font-size="10" font-weight="700" text-anchor="end" fill="#34d399" class="font-mono">6/6 Válidos</text>
+
+          <text x="0" y="66" font-size="9.5" fill="#64748b" class="font-sans">Auditoria WCAG:</text>
+          <text x="188" y="66" font-size="10" font-weight="700" text-anchor="end" fill="#a78bfa" class="font-mono">AAA Score</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== STATUS BAR (BOTTOM) ==================== -->
+  <g transform="translate(20, 560)">
+    <path d="M 0 0 L 960 0 L 960 24 Q 960 40 944 40 L 16 40 Q 0 40 0 24 Z" fill="#090d16" />
+    <line x1="0" y1="0" x2="960" y2="0" stroke="#1e293b" stroke-width="1" />
+
+    <!-- Status items -->
+    <g transform="translate(18, 24)">
+      <circle cx="0" cy="-4" r="3" fill="#10b981" />
+      <text x="8" y="0" font-size="10" font-weight="600" fill="#94a3b8" class="font-sans">Nexus WYSIWYG Editor v1.0.0</text>
+    </g>
+
+    <text x="250" y="24" font-size="10" fill="#64748b" class="font-sans">Linha 42, Coluna 18</text>
+    <text x="380" y="24" font-size="10" fill="#64748b" class="font-sans">Codificação: UTF-8</text>
+    <text x="500" y="24" font-size="10" fill="#64748b" class="font-sans">Adapter: Supabase (Live)</text>
+    <text x="670" y="24" font-size="10" fill="#a855f7" class="font-sans">✦ OpenAI GPT-4o Ready</text>
+
+    <g transform="translate(860, 16)">
+      <rect x="0" y="0" width="84" height="16" rx="4" fill="#1e293b" />
+      <text x="12" y="12" font-size="9" font-weight="700" fill="#94a3b8" class="font-sans">100% Zoom ▾</text>
+    </g>
+  </g>
+</svg>

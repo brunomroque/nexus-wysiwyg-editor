@@ -96,7 +96,7 @@
   <g transform="translate(136, 78)">
     <rect x="0" y="0" width="220" height="22" rx="11" fill="rgba(139, 92, 246, 0.15)" stroke="rgba(168, 85, 247, 0.35)" stroke-width="1" />
     <text x="110" y="15" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, monospace" font-size="10.5" font-weight="700" letter-spacing="0.14em" fill="#c084fc">
-      ENTERPRISE WYSIWYG &bull; AI
+      ENTERPRISE WYSIWYG • AI
     </text>
   </g>
 </svg>

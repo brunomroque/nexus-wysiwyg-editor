@@ -128,7 +128,7 @@ export type NexusWysiwygEditorProps = {
   autoSave?: boolean;
   locale?: SupportedLocale | string;
   translations?: Partial<EditorTranslations>;
-  theme?: "light" | "dark" | "auto";
+  theme?: "light" | "dark" | "auto" | "obsidian" | "editorial" | "glass" | "playful";
   className?: string;
   showRightPanel?: boolean;
   currentUserId?: string;
@@ -456,6 +456,13 @@ export function NexusWysiwygEditor({
     setLinkInputHref("");
   };
 
+  const handleOpenLinkModal = () => {
+    if (!editor) return;
+    const currentHref = editor.getAttributes("link").href || "";
+    setLinkInputHref(currentHref);
+    setShowLinkInput(true);
+  };
+
   const handleApplyImage = () => {
     if (!editor) return;
     executeCommand("insert.image", { src: imageInputSrc });
@@ -684,7 +691,9 @@ export function NexusWysiwygEditor({
   return (
     <EditorThemeContext.Provider value={theme}>
       <div
-        className={`nexus-editor-container ${theme === "dark" ? "dark" : ""} ${
+        className={`nexus-editor-container ${
+          theme === "dark" || theme === "obsidian" ? "dark" : ""
+        } theme-${theme} ${
           isFullscreen ? "is-fullscreen" : ""
         } ${className}`}
         data-theme={theme}
@@ -698,7 +707,7 @@ export function NexusWysiwygEditor({
         onChange={handleImageFileChange}
       />
 
-      {/* Menubar (TinyMCE-style top menus) */}
+      {/* Menubar (Classic top navigation menus) */}
       <nav className="nexus-menubar">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -776,7 +785,7 @@ export function NexusWysiwygEditor({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onSelect={() => setShowLinkInput(true)}>
+            <DropdownMenuItem onSelect={handleOpenLinkModal}>
               {t.insertLink}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setShowImageInput(true)}>
@@ -1073,7 +1082,13 @@ export function NexusWysiwygEditor({
               className={`nexus-toolbar-btn ${active ? "is-active" : ""}`}
               disabled={disabled}
               title={item.label}
-              onClick={() => executeCommand(item.commandId)}
+              onClick={() => {
+                if (item.commandId === "insert.link") {
+                  handleOpenLinkModal();
+                } else {
+                  executeCommand(item.commandId);
+                }
+              }}
             >
               {renderCommandIcon(item.commandId) ?? item.label}
             </button>
@@ -1117,20 +1132,44 @@ export function NexusWysiwygEditor({
       {/* Link and Image Popovers */}
       {showLinkInput ? (
         <div className="nexus-input-bar flex items-center gap-2 bg-[var(--nexus-surface-2)] p-2 border-b border-[var(--nexus-border)] text-xs">
+          <LinkIcon className="h-4 w-4 text-[var(--nexus-accent)] shrink-0" />
           <input
             type="url"
-            placeholder="https://example.com"
+            autoFocus
+            placeholder="https://exemplo.com (ou deixe vazio para remover)"
             value={linkInputHref}
             onChange={(e) => setLinkInputHref(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleApplyLink();
+              } else if (e.key === "Escape") {
+                setShowLinkInput(false);
+              }
+            }}
             className="nexus-input-field px-2 py-1 rounded border border-[var(--nexus-border)] bg-[var(--nexus-bg)] text-[var(--nexus-text)] flex-1"
           />
           <button
             type="button"
             onClick={handleApplyLink}
-            className="nexus-btn-primary px-2 py-1 rounded bg-[var(--nexus-accent)] text-white font-medium"
+            className="nexus-btn-primary px-2.5 py-1 rounded bg-[var(--nexus-accent)] text-white font-medium"
           >
             {t.save}
           </button>
+          {editor?.isActive("link") && (
+            <button
+              type="button"
+              onClick={() => {
+                editor.chain().focus().unsetLink().run();
+                setShowLinkInput(false);
+                setLinkInputHref("");
+              }}
+              className="nexus-btn-secondary px-2 py-1 rounded text-red-500 font-medium"
+              title="Remover Link"
+            >
+              Remover
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setShowLinkInput(false)}

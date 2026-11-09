@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export type EditorTheme = "light" | "dark" | "auto";
+export type EditorTheme = "light" | "dark" | "auto" | "obsidian" | "editorial" | "glass" | "playful";
 export const EditorThemeContext = React.createContext<EditorTheme>("auto");
 export function useEditorTheme() {
   return React.useContext(EditorThemeContext);

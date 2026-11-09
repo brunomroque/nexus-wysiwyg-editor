@@ -1,0 +1,28 @@
+name: "✨ Sugestão de Recurso / Feature Request"
+description: "Sugira uma nova ideia, melhoria de UX ou novo recurso para o Nexus WYSIWYG Editor"
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adoramos novas ideias! Ajude-nos a entender como sua proposta tornará a experiência do editor ainda melhor.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema essa funcionalidade resolve?
+      description: Uma descrição clara de qual é o gargalo ou necessidade atual.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução Proposta / Como deve funcionar
+      description: Como você imagina a interação na UI/UX do editor ou a nova API de props?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas Consideradas
+      description: Você considerou alguma biblioteca, plugin ou abordagem alternativa?

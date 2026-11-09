@@ -2,6 +2,7 @@
 export { NexusWysiwygEditor } from "./components/NexusWysiwygEditor";
 export type { NexusWysiwygEditorProps } from "./components/NexusWysiwygEditor";
 export { NexusLogoIcon, type NexusLogoIconProps } from "./components/NexusLogoIcon";
+export type { EditorTheme } from "./components/ui/utils";
 
 // Plugins and Registry
 export { defaultPlugins, defaultCorePlugin } from "./plugins/defaultPlugins";

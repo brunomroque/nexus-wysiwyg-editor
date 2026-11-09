@@ -8,6 +8,10 @@
   --nexus-accent: #2563eb;
   --nexus-accent-subtle: #eff6ff;
   --nexus-danger: #ef4444;
+  --nexus-radius: 0.5rem;
+  --nexus-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --nexus-font-doc: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --nexus-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .dark, [data-theme="dark"] {
@@ -20,6 +24,197 @@
   --nexus-accent: #3b82f6;
   --nexus-accent-subtle: rgba(59, 130, 246, 0.15);
   --nexus-danger: #f87171;
+  --nexus-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   Figma Prototyped Themes:
+   1. Linear Obsidian (Developer & Hacker Docs)
+   2. Editorial Paper & Ink (Publishers & Long-form)
+   3. Neo-Glass Enterprise (Executive SaaS)
+   4. Playful Creative Multiplayer (Creative Teams)
+   ========================================================================== */
+
+/* 1. Linear Obsidian */
+.theme-obsidian, [data-theme="obsidian"] {
+  --nexus-bg: #0b0f17;
+  --nexus-surface-1: #101625;
+  --nexus-surface-2: #131b2e;
+  --nexus-border: #222f49;
+  --nexus-text: #dce5f7;
+  --nexus-text-muted: #7f8ca5;
+  --nexus-accent: #8b5cf6;
+  --nexus-accent-subtle: rgba(139, 92, 246, 0.16);
+  --nexus-danger: #f87171;
+  --nexus-radius: 6px;
+  --nexus-font-ui: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --nexus-font-doc: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --nexus-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+}
+
+.theme-obsidian.nexus-editor-container,
+[data-theme="obsidian"].nexus-editor-container {
+  border-color: #222f49;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+}
+
+.theme-obsidian .nexus-toolbar-btn.is-active,
+[data-theme="obsidian"] .nexus-toolbar-btn.is-active {
+  background-color: rgba(139, 92, 246, 0.22);
+  color: #c084fc;
+}
+
+/* 2. Editorial Paper & Ink */
+.theme-editorial, [data-theme="editorial"] {
+  --nexus-bg: #fffdf9;
+  --nexus-surface-1: #faf8f5;
+  --nexus-surface-2: #f3efea;
+  --nexus-border: #ded8d0;
+  --nexus-text: #292524;
+  --nexus-text-muted: #78716c;
+  --nexus-accent: #c2410c;
+  --nexus-accent-subtle: #ffedd5;
+  --nexus-danger: #dc2626;
+  --nexus-radius: 6px;
+  --nexus-font-ui: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --nexus-font-doc: "Merriweather", Georgia, "Times New Roman", serif;
+  --nexus-shadow: 0 16px 45px rgba(87, 70, 52, 0.08);
+}
+
+.theme-editorial.nexus-editor-container,
+[data-theme="editorial"].nexus-editor-container {
+  background-color: #faf8f5;
+  border-color: #ded8d0;
+  box-shadow: 0 16px 45px rgba(87, 70, 52, 0.08);
+}
+
+.theme-editorial .nexus-tiptap-content,
+[data-theme="editorial"] .nexus-tiptap-content {
+  background-color: #fffdf9;
+}
+
+.theme-editorial .nexus-tiptap-content .tiptap,
+[data-theme="editorial"] .nexus-tiptap-content .tiptap {
+  font-family: var(--nexus-font-doc);
+  line-height: 1.85;
+  font-size: 1.05rem;
+}
+
+.theme-editorial .nexus-tiptap-content .tiptap h1,
+.theme-editorial .nexus-tiptap-content .tiptap h2,
+.theme-editorial .nexus-tiptap-content .tiptap h3,
+[data-theme="editorial"] .nexus-tiptap-content .tiptap h1,
+[data-theme="editorial"] .nexus-tiptap-content .tiptap h2,
+[data-theme="editorial"] .nexus-tiptap-content .tiptap h3 {
+  font-family: "Merriweather", serif;
+  letter-spacing: -0.02em;
+}
+
+.theme-editorial .nexus-toolbar-btn.is-active,
+[data-theme="editorial"] .nexus-toolbar-btn.is-active {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+/* 3. Neo-Glass Enterprise */
+.theme-glass, [data-theme="glass"] {
+  --nexus-bg: rgba(255, 255, 255, 0.94);
+  --nexus-surface-1: rgba(255, 255, 255, 0.72);
+  --nexus-surface-2: rgba(255, 255, 255, 0.5);
+  --nexus-border: rgba(255, 255, 255, 0.85);
+  --nexus-text: #172554;
+  --nexus-text-muted: #64748b;
+  --nexus-accent: #2563eb;
+  --nexus-accent-subtle: #dbeafe;
+  --nexus-danger: #ef4444;
+  --nexus-radius: 14px;
+  --nexus-font-ui: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --nexus-font-doc: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --nexus-shadow: 0 16px 50px rgba(65, 101, 158, 0.16);
+}
+
+.theme-glass.nexus-editor-container,
+[data-theme="glass"].nexus-editor-container {
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background:
+    radial-gradient(circle at 16% 30%, rgba(199, 210, 254, 0.35) 0, transparent 28%),
+    radial-gradient(circle at 78% 70%, rgba(186, 230, 253, 0.35) 0, transparent 30%),
+    linear-gradient(135deg, rgba(240, 246, 255, 0.95), rgba(230, 236, 250, 0.95));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 16px 50px rgba(65, 101, 158, 0.16);
+  border-radius: 14px;
+}
+
+.theme-glass .nexus-menubar,
+.theme-glass .nexus-toolbar,
+.theme-glass .nexus-statusbar,
+[data-theme="glass"] .nexus-menubar,
+[data-theme="glass"] .nexus-toolbar,
+[data-theme="glass"] .nexus-statusbar {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.theme-glass .nexus-toolbar-btn,
+[data-theme="glass"] .nexus-toolbar-btn {
+  border-radius: 8px;
+}
+
+.theme-glass .nexus-toolbar-btn:hover,
+[data-theme="glass"] .nexus-toolbar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.theme-glass .nexus-tiptap-content,
+[data-theme="glass"] .nexus-tiptap-content {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* 4. Playful Creative Multiplayer */
+.theme-playful, [data-theme="playful"] {
+  --nexus-bg: #ffffff;
+  --nexus-surface-1: #ffffff;
+  --nexus-surface-2: #f6f3ff;
+  --nexus-border: #e8e5f0;
+  --nexus-text: #24223a;
+  --nexus-text-muted: #747189;
+  --nexus-accent: #4f46e5;
+  --nexus-accent-subtle: #eeecff;
+  --nexus-danger: #ff5733;
+  --nexus-radius: 14px;
+  --nexus-font-ui: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --nexus-font-doc: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --nexus-shadow: 0 12px 36px rgba(79, 70, 229, 0.1);
+}
+
+.theme-playful.nexus-editor-container,
+[data-theme="playful"].nexus-editor-container {
+  border-radius: 16px;
+  border: 2px solid #e8e5f0;
+  box-shadow: 0 12px 36px rgba(79, 70, 229, 0.1);
+}
+
+.theme-playful .nexus-toolbar-btn,
+[data-theme="playful"] .nexus-toolbar-btn {
+  border-radius: 9999px;
+  padding: 0.3rem 0.55rem;
+}
+
+.theme-playful .nexus-toolbar-btn.is-active,
+[data-theme="playful"] .nexus-toolbar-btn.is-active {
+  background-color: #eeecff;
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.theme-playful .nexus-btn-primary,
+[data-theme="playful"] .nexus-btn-primary {
+  border-radius: 9999px;
 }
 
 /* ==========================================================================
@@ -32,11 +227,12 @@
   background-color: var(--nexus-bg);
   color: var(--nexus-text);
   border: 1px solid var(--nexus-border);
-  border-radius: 0.5rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  border-radius: var(--nexus-radius);
+  font-family: var(--nexus-font-ui);
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 .nexus-editor-container *,
@@ -53,7 +249,7 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
-/* Menubar (TinyMCE top navigation) */
+/* Menubar (Top navigation) */
 .nexus-menubar {
   display: flex;
   flex-wrap: wrap;
@@ -115,7 +311,7 @@
 }
 
 /* ==========================================================================
-   Radix Dropdown Menu & Context Menu (TinyMCE-style Popups)
+   Radix Dropdown Menu & Context Menu (Popups)
    Solid, High-Contrast, Zero-Transparency
    ========================================================================== */
 
@@ -437,6 +633,18 @@
   outline: none;
   line-height: 1.6;
   color: var(--nexus-text);
+}
+
+.nexus-tiptap-content .tiptap a {
+  color: var(--nexus-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.nexus-tiptap-content .tiptap a:hover {
+  opacity: 0.8;
 }
 
 .nexus-tiptap-content .tiptap p.is-editor-empty:first-child::before {

@@ -1,0 +1,64 @@
+name: "🐞 Relatório de Bug / Bug Report"
+description: "Crie um relatório de bug detalhado para nos ajudar a melhorar o Nexus WYSIWYG Editor"
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por dedicar um tempo para reportar um problema! Por favor, preencha os campos abaixo com o máximo de detalhes possível.
+  - type: input
+    id: version
+    attributes:
+      label: Versão do Nexus WYSIWYG Editor
+      description: Qual versão do pacote você está usando? (ex: 1.0.0)
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Ambiente / Framework
+      description: Em qual ambiente você está executando?
+      options:
+        - Vite + React
+        - Next.js (App Router)
+        - Next.js (Pages Router)
+        - Create React App (CRA)
+        - Remix
+        - Astro
+        - Outro
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Problema
+      description: Uma explicação clara e concisa do que está acontecendo de errado.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Passos para Reproduzir
+      description: Como podemos reproduzir o bug?
+      placeholder: |
+        1. Inicializar o componente com `<NexusWysiwygEditor ... />`
+        2. Clicar no botão '...'
+        3. Digitar '...'
+        4. Ver o erro no console
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Esperado
+      description: O que você esperava que acontecesse?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Erros do Console
+      description: Cole qualquer mensagem de erro do console ou stack traces aqui.
+      render: shell

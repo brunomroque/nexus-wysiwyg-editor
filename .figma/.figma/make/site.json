@@ -1,0 +1,10 @@
+{
+  "description": "Create and edit mission-critical documents with AI writing assistance, real-time collaboration, and compliance tools for enterprise teams.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

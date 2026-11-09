@@ -11,6 +11,7 @@ import {
   Layers,
   Lock,
   Moon,
+  Palette,
   Sparkles,
   Sun,
   Tag,
@@ -21,6 +22,7 @@ import {
   LocalStorageAdapter,
   NexusWysiwygEditor,
   type EditorTemplate,
+  type EditorTheme,
   type MentionCandidate,
   type MergeTag,
 } from "../../src";
@@ -157,9 +159,74 @@ const DEMO_TEMPLATES: EditorTemplate[] = [
   },
 ];
 
+const THEME_OPTIONS: Array<{
+  id: EditorTheme;
+  number: string;
+  name: string;
+  subtitle: string;
+  accent: string;
+  badge: string;
+  dotColor: string;
+}> = [
+  {
+    id: "light",
+    number: "00",
+    name: "Classic Light",
+    subtitle: "Padrão Corporativo Clean",
+    accent: "#2563eb",
+    badge: "Padrão",
+    dotColor: "#2563eb",
+  },
+  {
+    id: "dark",
+    number: "00",
+    name: "Classic Dark",
+    subtitle: "Enterprise Slate Dark",
+    accent: "#3b82f6",
+    badge: "Padrão",
+    dotColor: "#3b82f6",
+  },
+  {
+    id: "obsidian",
+    number: "01",
+    name: "Linear Obsidian",
+    subtitle: "Developer & Hacker Docs",
+    accent: "#8b5cf6",
+    badge: "Figma #1",
+    dotColor: "#8b5cf6",
+  },
+  {
+    id: "editorial",
+    number: "02",
+    name: "Editorial Paper & Ink",
+    subtitle: "Publishers & Long-form",
+    accent: "#c2410c",
+    badge: "Figma #2",
+    dotColor: "#c2410c",
+  },
+  {
+    id: "glass",
+    number: "03",
+    name: "Neo-Glass Enterprise",
+    subtitle: "Executive SaaS & Aura",
+    accent: "#2563eb",
+    badge: "Figma #3",
+    dotColor: "#06b6d4",
+  },
+  {
+    id: "playful",
+    number: "04",
+    name: "Playful Creative",
+    subtitle: "Creative Teams Multiplayer",
+    accent: "#4f46e5",
+    badge: "Figma #4",
+    dotColor: "#ff5733",
+  },
+];
+
 export function App() {
   const [content, setContent] = useState<string>(INITIAL_DEMO_HTML);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<EditorTheme>("light");
   const [locale, setLocale] = useState<"pt-BR" | "en">("pt-BR");
   const [readOnly, setReadOnly] = useState<boolean>(false);
   const [showRightPanel, setShowRightPanel] = useState<boolean>(true);
@@ -262,17 +329,34 @@ export function App() {
     handleMetric(`export_${format}`);
   };
 
+  const isDarkBase = theme === "dark" || theme === "obsidian";
+
   return (
     <div
-      className={theme === "dark" ? "dark" : ""}
+      className={isDarkBase ? "dark" : ""}
       style={{
         minHeight: "100vh",
-        backgroundColor: theme === "dark" ? "#030712" : "#f1f5f9",
-        color: theme === "dark" ? "#f9fafb" : "#0f172a",
+        backgroundColor:
+          theme === "obsidian"
+            ? "#06090e"
+            : theme === "editorial"
+            ? "#eeeae4"
+            : theme === "glass"
+            ? "#dbeafe"
+            : theme === "playful"
+            ? "#f3f0ff"
+            : theme === "dark"
+            ? "#030712"
+            : "#f1f5f9",
+        color: isDarkBase ? "#f9fafb" : "#0f172a",
         fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+          theme === "editorial"
+            ? '"DM Sans", -apple-system, sans-serif'
+            : theme === "glass"
+            ? '"Plus Jakarta Sans", -apple-system, sans-serif'
+            : '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         padding: "1.5rem 1rem",
-        transition: "background-color 0.2s ease, color 0.2s ease",
+        transition: "background-color 0.25s ease, color 0.25s ease",
       }}
     >
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
@@ -286,10 +370,40 @@ export function App() {
             gap: "1rem",
             marginBottom: "1rem",
             padding: "1rem 1.25rem",
-            backgroundColor: theme === "dark" ? "#111827" : "#ffffff",
-            borderRadius: "0.75rem",
-            border: `1px solid ${theme === "dark" ? "#1f2937" : "#e2e8f0"}`,
-            boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+            backgroundColor:
+              theme === "obsidian"
+                ? "#0b0f17"
+                : theme === "editorial"
+                ? "#faf8f5"
+                : theme === "glass"
+                ? "rgba(255, 255, 255, 0.75)"
+                : theme === "playful"
+                ? "#ffffff"
+                : theme === "dark"
+                ? "#111827"
+                : "#ffffff",
+            backdropFilter: theme === "glass" ? "blur(16px)" : undefined,
+            WebkitBackdropFilter: theme === "glass" ? "blur(16px)" : undefined,
+            borderRadius: theme === "playful" || theme === "glass" ? "1rem" : "0.75rem",
+            border: `1px solid ${
+              theme === "obsidian"
+                ? "#222f49"
+                : theme === "editorial"
+                ? "#ded8d0"
+                : theme === "glass"
+                ? "rgba(255, 255, 255, 0.8)"
+                : theme === "playful"
+                ? "#e8e5f0"
+                : theme === "dark"
+                ? "#1f2937"
+                : "#e2e8f0"
+            }`,
+            boxShadow:
+              theme === "obsidian"
+                ? "0 4px 20px rgba(0, 0, 0, 0.5)"
+                : theme === "glass"
+                ? "0 10px 30px rgba(65, 101, 158, 0.1)"
+                : "0 1px 3px rgba(0,0,0,0.06)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
@@ -305,22 +419,36 @@ export function App() {
               }}
             />
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
                 <h1
                   style={{
                     fontSize: "1.25rem",
                     fontWeight: 800,
                     margin: 0,
-                    background:
-                      theme === "dark"
-                        ? "linear-gradient(90deg, #ffffff, #e2e8f0, #c084fc)"
-                        : "linear-gradient(90deg, #0f172a, #334155, #6366f1)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    letterSpacing: "-0.01em",
+                    letterSpacing: "-0.02em",
+                    color: isDarkBase ? "#f8fafc" : "#0f172a",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
                   }}
                 >
-                  Nexus WYSIWYG Editor
+                  <span>Nexus</span>
+                  <span
+                    style={{
+                      color:
+                        theme === "obsidian"
+                          ? "#a855f7"
+                          : theme === "editorial"
+                          ? "#c2410c"
+                          : theme === "glass"
+                          ? "#2563eb"
+                          : theme === "playful"
+                          ? "#ff5733"
+                          : "#3b82f6",
+                    }}
+                  >
+                    WYSIWYG Editor
+                  </span>
                 </h1>
                 <span
                   style={{
@@ -337,7 +465,7 @@ export function App() {
                 </span>
               </div>
               <p style={{ margin: "0.15rem 0 0", fontSize: "0.8rem", opacity: 0.75 }}>
-                TinyMCE-style rich text architecture para React, TipTap, Radix UI &amp; TypeScript.
+                Editor de texto corporativo moderno para React, TipTap, Radix UI &amp; TypeScript.
               </p>
             </div>
           </div>
@@ -423,29 +551,204 @@ export function App() {
               <option value="en">🇺🇸 English</option>
             </select>
 
-            {/* Theme Toggle */}
-            <button
-              type="button"
-              onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
+            {/* Theme Selector: Padrão (Light / Dark) + 4 Temas do Figma */}
+            <div
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.35rem",
-                padding: "0.35rem 0.75rem",
+                padding: "0.2rem 0.4rem",
                 borderRadius: "0.375rem",
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                border: `1px solid ${theme === "dark" ? "#374151" : "#cbd5e1"}`,
-                backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
-                color: theme === "dark" ? "#ffffff" : "#0f172a",
+                border: `1px solid ${
+                  theme === "dark" || theme === "obsidian" ? "#374151" : "#cbd5e1"
+                }`,
+                backgroundColor:
+                  theme === "dark" || theme === "obsidian" ? "#1f2937" : "#ffffff",
               }}
             >
-              {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
-              {theme === "light" ? "Dark Mode" : "Light Mode"}
-            </button>
+              <Palette
+                size={14}
+                style={{
+                  color:
+                    theme === "obsidian"
+                      ? "#8b5cf6"
+                      : theme === "editorial"
+                      ? "#c2410c"
+                      : theme === "glass"
+                      ? "#2563eb"
+                      : theme === "playful"
+                      ? "#ff5733"
+                      : "#64748b",
+                  marginLeft: "0.25rem",
+                }}
+              />
+              <select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as EditorTheme)}
+                style={{
+                  border: "none",
+                  backgroundColor: "transparent",
+                  color:
+                    theme === "dark" || theme === "obsidian" ? "#ffffff" : "#0f172a",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  outline: "none",
+                  padding: "0.15rem 0.25rem",
+                }}
+                title="Trocar tema visual do Nexus Editor"
+              >
+                <optgroup label="Padrão">
+                  <option value="light">☀️ Classic Light (Padrão)</option>
+                  <option value="dark">🌙 Classic Dark</option>
+                </optgroup>
+                <optgroup label="Figma Prototypes">
+                  <option value="obsidian">🌌 01 · Linear Obsidian (Dev &amp; Hacker)</option>
+                  <option value="editorial">📜 02 · Editorial Paper &amp; Ink (Long-form)</option>
+                  <option value="glass">💎 03 · Neo-Glass Enterprise (Executive SaaS)</option>
+                  <option value="playful">🎨 04 · Playful Creative (Multiplayer)</option>
+                </optgroup>
+              </select>
+            </div>
           </div>
         </header>
+
+        {/* ==========================================================================
+            Interactive Visual Theme Switcher Cards (Padrão + 4 Temas do Figma)
+            ========================================================================== */}
+        <div
+          style={{
+            marginBottom: "1rem",
+            padding: "0.85rem 1rem",
+            borderRadius: "0.75rem",
+            backgroundColor: isDarkBase ? "#111827" : "#ffffff",
+            border: `1px solid ${isDarkBase ? "#1f2937" : "#e2e8f0"}`,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "0.65rem",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <Palette size={16} color="#8b5cf6" />
+              <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>
+                Escolha a Identidade Visual do Editor:
+              </span>
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  padding: "0.15rem 0.45rem",
+                  borderRadius: "9999px",
+                  backgroundColor: "rgba(139, 92, 246, 0.15)",
+                  color: "#a855f7",
+                  fontWeight: 600,
+                }}
+              >
+                Padrão + 4 Temas Protótipo Figma
+              </span>
+            </div>
+            <span style={{ fontSize: "0.72rem", opacity: 0.7 }}>
+              Tema ativo: <strong>{THEME_OPTIONS.find((t) => t.id === theme)?.name}</strong>
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(175px, 1fr))",
+              gap: "0.5rem",
+            }}
+          >
+            {THEME_OPTIONS.map((opt) => {
+              const isSelected = theme === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setTheme(opt.id)}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: "0.25rem",
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: "0.5rem",
+                    border: isSelected
+                      ? `2px solid ${opt.accent}`
+                      : `1px solid ${isDarkBase ? "#1f2937" : "#e2e8f0"}`,
+                    backgroundColor: isSelected
+                      ? isDarkBase
+                        ? "rgba(139, 92, 246, 0.16)"
+                        : "rgba(37, 99, 235, 0.08)"
+                      : isDarkBase
+                      ? "#1a2234"
+                      : "#f8fafc",
+                    color: isDarkBase ? "#f9fafb" : "#0f172a",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    transition: "all 0.18s ease",
+                    boxShadow: isSelected ? `0 0 12px ${opt.accent}40` : "none",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                      <span
+                        style={{
+                          width: "8px",
+                          height: "8px",
+                          borderRadius: "50%",
+                          backgroundColor: opt.dotColor,
+                          display: "inline-block",
+                          boxShadow: `0 0 6px ${opt.dotColor}`,
+                        }}
+                      />
+                      <span style={{ fontWeight: 700, fontSize: "0.78rem" }}>
+                        {opt.name}
+                      </span>
+                    </div>
+                    {isSelected && (
+                      <span
+                        style={{
+                          fontSize: "0.62rem",
+                          fontWeight: 700,
+                          color: opt.accent,
+                          backgroundColor: `${opt.accent}20`,
+                          padding: "0.1rem 0.35rem",
+                          borderRadius: "4px",
+                        }}
+                      >
+                        ATIVO
+                      </span>
+                    )}
+                  </div>
+                  <span
+                    style={{
+                      fontSize: "0.68rem",
+                      opacity: 0.7,
+                      lineHeight: 1.25,
+                    }}
+                  >
+                    {opt.subtitle}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Feature Badges Bar */}
         <div
@@ -466,7 +769,7 @@ export function App() {
             <Sparkles size={14} /> Features Ativas:
           </span>
           {[
-            "Menubar Completo (TinyMCE)",
+            "Menubar Completo",
             "Agente de IA (OpenAI NLP)",
             "Menu de Contexto (Botão Direito)",
             "Word Diff em Tempo Real",

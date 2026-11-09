@@ -1,7 +1,7 @@
 {
   "name": "nexus-wysiwyg-editor",
   "version": "1.0.0",
-  "description": "An enterprise-grade, TinyMCE-style WYSIWYG editor built with React, TipTap, Radix UI, and TypeScript.",
+  "description": "An enterprise-grade WYSIWYG editor built with React, TipTap, Radix UI, and TypeScript.",
   "author": "Bruno Roque",
   "license": "MIT",
   "type": "module",
@@ -26,7 +26,6 @@
     "wysiwyg",
     "editor",
     "tiptap",
-    "tinymce",
     "rich-text",
     "radix-ui",
     "typescript",
